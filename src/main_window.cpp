@@ -105,10 +105,11 @@ void MainWindow::display_output_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr output
          viewer2->addPointCloud(outputCloud, "displayCloud");
          w2->update();
      }
-     w2->update();
-     ui.save_cloud_button->setEnabled(true);
-     ui.reload_button->setEnabled(true);
+    w2->update();
+    ui.save_cloud_button->setEnabled(true);
+    ui.reload_button->setEnabled(true);
 }
+
 
 void MainWindow::print_filter_values(){
     loggstring = "";
@@ -193,7 +194,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         passfilter.setInputCloud(globalCloud1);
         passfilter.setFilterFieldName(ui.passthrough_input_3->currentText().toStdString());
         passfilter.setFilterLimits(ui.filter_input_1->value(),ui.filter_input_2->value());
-        //passfilter.setKeepOrganized(true);
+        passfilter.setKeepOrganized(true);
         passfilter.filter(*cloud_filtered);
         display_output_cloud(cloud_filtered);
         break;
@@ -229,6 +230,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         // do filter operations here
     //case 4:
         //normal estimation
+        //break;
     case 5:
         // radius outlier removal
         if(ui.filter_input_1->value() < 0.001)

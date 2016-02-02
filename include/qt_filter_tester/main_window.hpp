@@ -24,6 +24,7 @@
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/common/common.h>
+#include <pcl/features/normal_3d.h>
 #include <cmath>
 
 /*****************************************************************************
