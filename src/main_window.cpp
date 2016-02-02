@@ -193,6 +193,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         passfilter.setInputCloud(globalCloud1);
         passfilter.setFilterFieldName(ui.passthrough_input_3->currentText().toStdString());
         passfilter.setFilterLimits(ui.filter_input_1->value(),ui.filter_input_2->value());
+        //passfilter.setKeepOrganized(true);
         passfilter.filter(*cloud_filtered);
         display_output_cloud(cloud_filtered);
         break;
@@ -234,6 +235,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         {
             ui.filter_input_1->setValue(0.001);
         }
+        //statistical_Outlier_filter.setKeepOrganized(true);
         statistical_Outlier_filter.setInputCloud(globalCloud1);
         statistical_Outlier_filter.setMeanK(100);
         statistical_Outlier_filter.setStddevMulThresh(ui.filter_input_1->value());
