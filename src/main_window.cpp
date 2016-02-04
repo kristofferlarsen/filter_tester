@@ -90,7 +90,6 @@ void MainWindow::display_viewer_1(QString url)
 /*
  * Displays a cloudpoint image in viewer nr. 2
  */
-<<<<<<< HEAD
 void MainWindow::display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer){
     output_cloud = filters->get_filtered_cloud();
     viewer2 = viewer;
@@ -100,17 +99,6 @@ void MainWindow::display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisua
     viewer1->getCameras(cam);
     viewer2->setCameraPosition(cam[0].pos[0],cam[0].pos[1],cam[0].pos[2],cam[0].view[0],cam[0].view[1],cam[0].view[2]);
     filter_changed_flag = true;
-=======
-void MainWindow::display_output_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr outputCloud){
-    filteredCloud = outputCloud;
-    if(!viewer2->updatePointCloud(outputCloud, "displayCloud")){
-         viewer2->addPointCloud(outputCloud, "displayCloud");
-         w2->update();
-     }
-    w2->update();
-    ui.save_cloud_button->setEnabled(true);
-    ui.reload_button->setEnabled(true);
->>>>>>> 7d74d73bf795ee179691535549078ab2af79927b
 }
 
 
@@ -194,16 +182,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
     switch(ui.filter_selection_box->currentIndex()){
     case 0:
         // passthrough
-<<<<<<< HEAD
         display_viewer_2(filters->passthrough_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()));
-=======
-        passfilter.setInputCloud(globalCloud1);
-        passfilter.setFilterFieldName(ui.passthrough_input_3->currentText().toStdString());
-        passfilter.setFilterLimits(ui.filter_input_1->value(),ui.filter_input_2->value());
-        passfilter.setKeepOrganized(true);
-        passfilter.filter(*cloud_filtered);
-        display_output_cloud(cloud_filtered);
->>>>>>> 7d74d73bf795ee179691535549078ab2af79927b
         break;
     case 1:
         //voxelGrid

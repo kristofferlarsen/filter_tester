@@ -28,12 +28,9 @@
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/common/common.h>
-<<<<<<< HEAD
 
 #include <eigen3/Eigen/Core>
-=======
-#include <pcl/features/normal_3d.h>
->>>>>>> 7d74d73bf795ee179691535549078ab2af79927b
+
 #include <cmath>
 #include <iostream>
 
