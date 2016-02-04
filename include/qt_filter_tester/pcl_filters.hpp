@@ -15,6 +15,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/features/integral_image_normal.h>
 
 
 
@@ -35,8 +36,10 @@ public:
     boost::shared_ptr<pcl::visualization::PCLVisualizer> shadowpoint_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> statistical_outlier_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold);
     pcl::PointCloud<pcl::PointXYZ>::Ptr get_filtered_cloud();
-    pcl::PointCloud<pcl::Normal>::Ptr get_normals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr passthrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
+    pcl::PointCloud<pcl::Normal>::Ptr get_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr passthrough (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr voxelgrid (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr median (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement);
 
 
 private:

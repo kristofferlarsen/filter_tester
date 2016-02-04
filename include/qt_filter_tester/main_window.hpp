@@ -33,6 +33,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <stdlib.h>
 
 /*****************************************************************************
 ** Namespace
@@ -71,9 +72,6 @@ public Q_SLOTS:
     void on_filter_slider_1_valueChanged(int i);
     void on_filter_slider_2_valueChanged(int i);
     void on_filter_slider_3_valueChanged(int i);
-    void on_filter_input_1_valueChanged(double d);
-    void on_filter_input_2_valueChanged(double d);
-    void on_filter_input_3_valueChanged(double d);
 
 private:
     Ui::MainWindowDesign ui;
