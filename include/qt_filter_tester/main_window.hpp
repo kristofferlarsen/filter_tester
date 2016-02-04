@@ -11,20 +11,27 @@
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
+#include <QtGui>
+#include <QMessageBox>
 
-#include <QtGui/QMainWindow>
 #include "ui_main_window.h"
+#include "pcl_filters.hpp"
 #include "qnode.hpp"
-#include <pcl/visualization/pcl_visualizer.h>
+
 #include <vtkRenderWindow.h>
 #include <QVTKWidget.h>
+
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/file_io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/common/common.h>
+
+#include <eigen3/Eigen/Core>
 #include <cmath>
+#include <iostream>
 
 /*****************************************************************************
 ** Namespace
@@ -48,9 +55,9 @@ public:
 	void closeEvent(QCloseEvent *event); // Overloaded function
     void showNoMasterMessage();
     void print_to_logg(QString msg);
-    void load_and_display_cloud(QString url);
+    void display_viewer_1(QString url);
     void hide_all_filter_inputs();
-    void display_output_cloud(pcl::PointCloud<pcl::PointXYZ>::Ptr outputCloud);
+    void display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
     void print_filter_values();
     void init_ui_elemets();
 
@@ -72,16 +79,22 @@ private:
     QNode qnode;
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer1;
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer2;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr globalCloud1;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr filteredCloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud;
     pcl::PassThrough<pcl::PointXYZ> passfilter;
     pcl::VoxelGrid<pcl::PointXYZ> voxelfilter;
     pcl::MedianFilter<pcl::PointXYZ> medianfilter;
     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_Outlier_filter;
+    std::vector<pcl::visualization::Camera> cam;
+    bool filter_changed_flag;
+
     QVTKWidget *w1;
     QVTKWidget *w2;
     QStringListModel *loggingModel;
     QString loggstring;
+    PclFilters *filters;
+    Eigen::Affine3f viewerpose;
+
 };
 
 }
