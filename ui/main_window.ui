@@ -209,7 +209,7 @@
     <widget class="QSlider" name="filter_slider_3">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>220</x>
        <y>90</y>
        <width>300</width>
        <height>29</height>
@@ -231,7 +231,7 @@
     <widget class="QSlider" name="filter_slider_2">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>220</x>
        <y>60</y>
        <width>300</width>
        <height>29</height>
@@ -258,7 +258,7 @@
       <rect>
        <x>20</x>
        <y>30</y>
-       <width>111</width>
+       <width>121</width>
        <height>17</height>
       </rect>
      </property>
@@ -269,7 +269,7 @@
     <widget class="QDoubleSpinBox" name="filter_input_2">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>140</x>
        <y>60</y>
        <width>69</width>
        <height>27</height>
@@ -291,7 +291,7 @@
     <widget class="QComboBox" name="passthrough_input_3">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>140</x>
        <y>90</y>
        <width>69</width>
        <height>27</height>
@@ -303,7 +303,7 @@
       <rect>
        <x>20</x>
        <y>63</y>
-       <width>111</width>
+       <width>121</width>
        <height>17</height>
       </rect>
      </property>
@@ -314,7 +314,7 @@
     <widget class="QSlider" name="filter_slider_1">
      <property name="geometry">
       <rect>
-       <x>210</x>
+       <x>220</x>
        <y>30</y>
        <width>300</width>
        <height>29</height>
@@ -336,7 +336,7 @@
     <widget class="QDoubleSpinBox" name="filter_input_1">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>140</x>
        <y>30</y>
        <width>69</width>
        <height>27</height>
@@ -360,7 +360,7 @@
       <rect>
        <x>20</x>
        <y>94</y>
-       <width>111</width>
+       <width>121</width>
        <height>17</height>
       </rect>
      </property>
@@ -371,7 +371,7 @@
     <widget class="QDoubleSpinBox" name="filter_input_3">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>140</x>
        <y>90</y>
        <width>69</width>
        <height>27</height>

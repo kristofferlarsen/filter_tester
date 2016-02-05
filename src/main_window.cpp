@@ -196,7 +196,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         // do filter operations here
     case 4:
         //normal estimation
-        display_viewer_2(filters->normalsVis(input_cloud,ui.filter_input_1->value()));
+        display_viewer_2(filters->normalsVis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
         break;
     //case 5:
         // radius outlier removal
@@ -245,6 +245,7 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
     switch (i){
     case 0:
         // passthrough
+        continously_update_filter_flag = true;
         ui.filter_input_1->setRange(-5,5);
         ui.filter_input_2->setRange(-5,5);
         ui.filter_input_1->setSingleStep(0.1);
@@ -257,19 +258,21 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.input_label_1->setText("Min:");
         ui.input_label_2->setText("Max:");
         ui.input_label_3->setText("Axis:");
-        continously_update_filter_flag = true;
+
         break;
     case 1:
         // voxel grid
+        continously_update_filter_flag = true;
         ui.input_label_1->setText("Voxel size");
         ui.filter_input_1->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_input_1->setSingleStep(0.001);
         ui.filter_input_1->setRange(0.001,0.2);
-        continously_update_filter_flag = true;
+
         break;
     case 2:
         //median
+        continously_update_filter_flag = false;
         ui.input_label_1->setText("Window size");
         ui.input_label_2->setText("Movement");
         ui.filter_input_1->setRange(0,80);
@@ -280,29 +283,37 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_2->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_slider_2->setVisible(true);
-        continously_update_filter_flag = false;
+
         break;
     case 3:
         //shadow point
+        continously_update_filter_flag = false;
         ui.input_label_1->setText("Threshold");
         ui.filter_input_1->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_input_1->setRange(0,1);
         ui.filter_input_1->setSingleStep(0.001);
-        continously_update_filter_flag = false;
+
         break;
     case 4:
         //normal estimation
+        continously_update_filter_flag = false;
         ui.input_label_1->setText("Radius");
+        ui.input_label_2->setText("NumNormals");
         ui.filter_input_1->setVisible(true);
+        ui.filter_input_2->setVisible(true);
         ui.filter_slider_1->setVisible(true);
+        ui.filter_slider_2->setVisible(true);
         ui.filter_input_1->setRange(0.001,0.5);
         ui.filter_input_1->setSingleStep(0.001);
-        continously_update_filter_flag = false;
+        ui.filter_input_2->setRange(1,10);
+        ui.filter_input_1->setSingleStep(1);
+
         //all blank
         break;
     case 5:
         //statistical outlier removal
+        continously_update_filter_flag = false;
         ui.input_label_1->setText("MeanK");
         ui.input_label_2->setText("StddevMulThresh");
         ui.filter_input_1->setVisible(true);
@@ -313,7 +324,7 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_1->setSingleStep(1);
         ui.filter_input_2->setRange(0.001,1);
         ui.filter_input_2->setSingleStep(0.001);
-        continously_update_filter_flag = false;
+
         break;
     default:
         break;

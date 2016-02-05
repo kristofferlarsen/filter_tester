@@ -22,11 +22,12 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize(pcl::
     return (viewer);
 }
 
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius)
+boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius, int numOfNormals)
 {
     viewer.reset(new pcl::visualization::PCLVisualizer ("3D Viewer",false));
     viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
-    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, get_normals(cloud,radius), 1, 0.05, "normals");
+    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, get_normals(cloud,radius), numOfNormals, 0.05, "normals");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "normals");
     viewer->initCameraParameters ();
     filteredCloud = cloud;
     return (viewer);

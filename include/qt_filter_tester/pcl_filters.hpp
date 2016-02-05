@@ -29,7 +29,7 @@ public:
     ~PclFilters();
 
     boost::shared_ptr<pcl::visualization::PCLVisualizer> visualize (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> normalsVis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius);
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> normalsVis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius, int numOfNormals);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> passthrough_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> median_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> voxelgrid_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz);
