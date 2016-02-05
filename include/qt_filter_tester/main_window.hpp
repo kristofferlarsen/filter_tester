@@ -62,6 +62,7 @@ public:
     void display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer);
     void print_filter_values();
     void init_ui_elemets();
+    void reset_sliders();
 
 public Q_SLOTS:
     //auto connection

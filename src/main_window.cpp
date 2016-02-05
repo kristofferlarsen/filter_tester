@@ -46,7 +46,7 @@ void MainWindow::init_ui_elemets(){
     ui.filter_selection_box->addItem("Median");
     ui.filter_selection_box->addItem("ShadowPoints");
     ui.filter_selection_box->addItem("Normal Estimation");
-    ui.filter_selection_box->addItem("Statistical outlied removal");
+    ui.filter_selection_box->addItem("Statistical outlier removal");
     ui.passthrough_input_3->addItem("x");
     ui.passthrough_input_3->addItem("y");
     ui.passthrough_input_3->addItem("z");
@@ -67,6 +67,19 @@ void MainWindow::init_ui_elemets(){
     ui.verticalLayout_2->addWidget(w2);
     ui.filter_selection_box->setEnabled(false);
     hide_all_filter_inputs();
+}
+
+void MainWindow::reset_sliders()
+{
+    bool tmp = continously_update_filter_flag;
+    continously_update_filter_flag = false;
+    Q_EMIT on_filter_slider_1_valueChanged(50);
+    Q_EMIT on_filter_slider_2_valueChanged(50);
+    Q_EMIT on_filter_slider_3_valueChanged(50);
+    ui.filter_slider_1->setValue(50);
+    ui.filter_slider_2->setValue(50);
+    ui.filter_slider_3->setValue(50);
+    continously_update_filter_flag = tmp;
 }
 
 void MainWindow::display_viewer_1(QString url)
@@ -127,6 +140,30 @@ void MainWindow::print_filter_values(){
         break;
     case 3:
         //shadow point
+        loggstring.append("Shadow point removal paramters: ");
+        loggstring.append("Threshold: ");
+        loggstring.append(QString::number(round(ui.filter_input_1->value())));
+        loggstring.append(", Radius (normal search): ");
+        loggstring.append(QString::number(ui.filter_input_2->value()));
+        print_to_logg(loggstring);
+        break;
+    case 4:
+        //Normal estimation
+        loggstring.append("Normal estimation paramters: ");
+        loggstring.append("Radius (normal search): ");
+        loggstring.append(QString::number(ui.filter_input_1->value()));
+        loggstring.append(", Number of normals displayed: ");
+        loggstring.append(QString::number(ui.filter_input_2->value()));
+        print_to_logg(loggstring);
+        break;
+    case 5:
+        //statistical outlier removal
+        loggstring.append("Statistical outlier removal paramters: ");
+        loggstring.append("MeanK: ");
+        loggstring.append(QString::number(round(ui.filter_input_1->value())));
+        loggstring.append(", Standard deviation threshold: ");
+        loggstring.append(QString::number(ui.filter_input_2->value()));
+        print_to_logg(loggstring);
         break;
     default:
         break;
@@ -191,21 +228,18 @@ void MainWindow::on_run_action_button_clicked(bool check){
         //median
         display_viewer_2(filters->median_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
         break;
-    //case 3:
+    case 3:
         //shadow points
-        // do filter operations here
+        display_viewer_2(filters->shadowpoint_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        break;
     case 4:
         //normal estimation
         display_viewer_2(filters->normalsVis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
         break;
-    //case 5:
-        // radius outlier removal
-        //statistical_Outlier_filter.setKeepOrganized(true);
-        //statistical_Outlier_filter.setInputCloud(input_cloud);
-        //statistical_Outlier_filter.setMeanK(100);
-        //statistical_Outlier_filter.setStddevMulThresh(ui.filter_input_1->value());
-        //display_viewer_2(cloud_filtered);
-        //break;
+    case 5:
+        //statistical outlier removal
+        display_viewer_2(filters->statistical_outlier_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        break;
     default:
         loggstring.append("Not implemented");
         print_to_logg(loggstring);
@@ -240,7 +274,6 @@ void MainWindow::on_reload_button_clicked(bool check){
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
     hide_all_filter_inputs();
-
     filter_changed_flag = true;
     switch (i){
     case 0:
@@ -258,7 +291,6 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.input_label_1->setText("Min:");
         ui.input_label_2->setText("Max:");
         ui.input_label_3->setText("Axis:");
-
         break;
     case 1:
         // voxel grid
@@ -283,17 +315,20 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_2->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_slider_2->setVisible(true);
-
         break;
     case 3:
         //shadow point
         continously_update_filter_flag = false;
         ui.input_label_1->setText("Threshold");
+        ui.input_label_2->setText("Radius");
         ui.filter_input_1->setVisible(true);
+        ui.filter_input_2->setVisible(true);
         ui.filter_slider_1->setVisible(true);
+        ui.filter_slider_2->setVisible(true);
         ui.filter_input_1->setRange(0,1);
+        ui.filter_input_2->setRange(0.001,0.5);
         ui.filter_input_1->setSingleStep(0.001);
-
+        ui.filter_input_2->setSingleStep(0.001);
         break;
     case 4:
         //normal estimation
@@ -305,11 +340,9 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_slider_1->setVisible(true);
         ui.filter_slider_2->setVisible(true);
         ui.filter_input_1->setRange(0.001,0.5);
-        ui.filter_input_1->setSingleStep(0.001);
         ui.filter_input_2->setRange(1,10);
-        ui.filter_input_1->setSingleStep(1);
-
-        //all blank
+        ui.filter_input_1->setSingleStep(0.001);
+        ui.filter_input_2->setSingleStep(1);
         break;
     case 5:
         //statistical outlier removal
@@ -324,11 +357,11 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_1->setSingleStep(1);
         ui.filter_input_2->setRange(0.001,1);
         ui.filter_input_2->setSingleStep(0.001);
-
         break;
     default:
         break;
     }
+    reset_sliders();
 }
 
 void MainWindow::on_filter_slider_1_valueChanged(int i){

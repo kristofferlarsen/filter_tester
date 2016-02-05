@@ -16,6 +16,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/filters/shadowpoints.h>
 
 
 
@@ -33,14 +34,14 @@ public:
     boost::shared_ptr<pcl::visualization::PCLVisualizer> passthrough_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> median_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> voxelgrid_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz);
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> shadowpoint_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold);
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> shadowpoint_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius);
     boost::shared_ptr<pcl::visualization::PCLVisualizer> statistical_outlier_vis (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold);
     pcl::PointCloud<pcl::PointXYZ>::Ptr get_filtered_cloud();
     pcl::PointCloud<pcl::Normal>::Ptr get_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius);
     pcl::PointCloud<pcl::PointXYZ>::Ptr passthrough (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
     pcl::PointCloud<pcl::PointXYZ>::Ptr voxelgrid (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz);
     pcl::PointCloud<pcl::PointXYZ>::Ptr median (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr shadowpoint(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr shadowpoint(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius);
     pcl::PointCloud<pcl::PointXYZ>::Ptr statistical_outlier(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold);
 
 
@@ -50,7 +51,8 @@ private:
     pcl::PassThrough<pcl::PointXYZ> passfilter;
     pcl::VoxelGrid<pcl::PointXYZ> voxelfilter;
     pcl::MedianFilter<pcl::PointXYZ> medianfilter;
-    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_Outlier_filter;
+    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_outlier_filter;
+    pcl::ShadowPoints<pcl::PointXYZ, pcl::Normal> shadowpoint_filter;
 
 public Q_SLOTS:
 

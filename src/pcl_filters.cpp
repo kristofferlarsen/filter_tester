@@ -35,7 +35,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl:
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::passthrough_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis)
 {
-    return(visualize(passthrough(cloud,min,max,axis)));
+    return (visualize(passthrough(cloud,min,max,axis)));
 }
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::median_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement)
@@ -45,7 +45,17 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::median_vis(pcl:
 
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::voxelgrid_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz)
 {
-    return(visualize(voxelgrid(cloud,lx,ly,lz)));
+    return (visualize(voxelgrid(cloud,lx,ly,lz)));
+}
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::shadowpoint_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius)
+{
+    return (visualize(shadowpoint(cloud, threshold, radius)));
+}
+
+boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::statistical_outlier_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold)
+{
+    return (visualize(statistical_outlier(cloud,meanK,std_deviation_threshold)));
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::get_filtered_cloud()
@@ -96,7 +106,29 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::median(pcl::PointCloud<pcl::Poin
     medianfilter.filter(*cloud_filtered);
     filteredCloud = cloud_filtered;
     return (cloud_filtered);
+}
 
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::shadowpoint(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+    shadowpoint_filter.setInputCloud(cloud);
+    shadowpoint_filter.setThreshold(threshold);
+    shadowpoint_filter.setNormals(get_normals(cloud, radius));
+    shadowpoint_filter.filter(*cloud_filtered);
+    filteredCloud = cloud_filtered;
+    return (cloud_filtered);
+}
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::statistical_outlier(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+    //statistical_outlier_filter.setKeepOrganized(true);
+    statistical_outlier_filter.setInputCloud(cloud);
+    statistical_outlier_filter.setMeanK(meanK);
+    statistical_outlier_filter.setStddevMulThresh(std_deviation_threshold);
+    statistical_outlier_filter.filter(*cloud_filtered);
+    filteredCloud = cloud_filtered;
+    return (cloud_filtered);
 }
 }
 
