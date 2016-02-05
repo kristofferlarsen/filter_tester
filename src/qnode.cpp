@@ -10,13 +10,9 @@
 ** Includes
 *****************************************************************************/
 
-#include <ros/ros.h>
-#include <ros/network.h>
-#include <string>
-#include <std_msgs/String.h>
-#include <sstream>
+
 #include "../include/qt_filter_tester/qnode.hpp"
-#include <pcl/io/pcd_io.h>
+
 
 /*****************************************************************************
 ** Namespaces

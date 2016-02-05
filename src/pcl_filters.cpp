@@ -22,22 +22,16 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize(pcl::
     return (viewer);
 }
 
-/*
- * returns a visualizer based on the input pointcloud and normals cloud
- */
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius)
 {
     viewer.reset(new pcl::visualization::PCLVisualizer ("3D Viewer",false));
     viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
-    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, get_normals(cloud), 10, 0.05, "normals");
+    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, get_normals(cloud,radius), 1, 0.05, "normals");
     viewer->initCameraParameters ();
     filteredCloud = cloud;
     return (viewer);
 }
 
-/*
- * Return a viewer with a passthrough filtered pointcloud
- */
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::passthrough_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis)
 {
     return(visualize(passthrough(cloud,min,max,axis)));
@@ -53,24 +47,18 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::voxelgrid_vis(p
     return(visualize(voxelgrid(cloud,lx,ly,lz)));
 }
 
-/*
- * Returns the last filtered pointcloud
- */
 pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::get_filtered_cloud()
 {
     return filteredCloud;
 }
 
-/*
- * Returns a pointcloud of normals corresponding to the input cloud
- */
-pcl::PointCloud<pcl::Normal>::Ptr PclFilters::get_normals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+pcl::PointCloud<pcl::Normal>::Ptr PclFilters::get_normals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius)
 {
-    pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);
-    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> norm_est;
+    pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);  
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> norm_est;
     norm_est.setSearchMethod(tree);
-    norm_est.setRadiusSearch (0.3);
+    norm_est.setRadiusSearch (radius);
     norm_est.setInputCloud (cloud);
     //norm_est.setSearchSurface (cloud);
     norm_est.compute (*normals_out);

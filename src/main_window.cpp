@@ -156,6 +156,7 @@ void MainWindow::on_load_file_button_clicked(bool check){
     ui.run_action_button->setEnabled(true);
     ui.filter_selection_box->setEnabled(true);
     display_viewer_1(fileName);
+    ui.filter_selection_box->setCurrentIndex(0);
     Q_EMIT on_filter_selection_box_currentIndexChanged(0);
 }
 
@@ -164,11 +165,27 @@ void MainWindow::on_run_action_button_clicked(bool check){
     switch(ui.filter_selection_box->currentIndex()){
     case 0:
         // passthrough
-        display_viewer_2(filters->passthrough_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()));
+        if(filter_changed_flag){
+            display_viewer_2(filters->passthrough_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()));
+        }
+        else{
+            //update pointcloud in viewer2
+            viewer2->updatePointCloud(filters->passthrough(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()),"sample cloud");
+            output_cloud = filters->get_filtered_cloud();
+            w2->update();
+        }
+
         break;
     case 1:
         //voxelGrid
-        display_viewer_2(filters->voxelgrid_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()));
+        if(filter_changed_flag){
+            display_viewer_2(filters->voxelgrid_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()));
+        }
+        else{
+            viewer2->updatePointCloud(filters->voxelgrid(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()),"sample cloud");
+            output_cloud = filters->get_filtered_cloud();
+            w2->update();
+        }
         break;
     case 2:
         //median
@@ -179,7 +196,7 @@ void MainWindow::on_run_action_button_clicked(bool check){
         // do filter operations here
     case 4:
         //normal estimation
-        display_viewer_2(filters->normalsVis(input_cloud));
+        display_viewer_2(filters->normalsVis(input_cloud,ui.filter_input_1->value()));
         break;
     //case 5:
         // radius outlier removal
@@ -223,6 +240,7 @@ void MainWindow::on_reload_button_clicked(bool check){
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
     hide_all_filter_inputs();
+
     filter_changed_flag = true;
     switch (i){
     case 0:
@@ -239,6 +257,7 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.input_label_1->setText("Min:");
         ui.input_label_2->setText("Max:");
         ui.input_label_3->setText("Axis:");
+        continously_update_filter_flag = true;
         break;
     case 1:
         // voxel grid
@@ -246,7 +265,8 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_1->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_input_1->setSingleStep(0.001);
-        ui.filter_input_1->setRange(0.009,1);
+        ui.filter_input_1->setRange(0.001,0.2);
+        continously_update_filter_flag = true;
         break;
     case 2:
         //median
@@ -260,7 +280,7 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_2->setVisible(true);
         ui.filter_slider_1->setVisible(true);
         ui.filter_slider_2->setVisible(true);
-
+        continously_update_filter_flag = false;
         break;
     case 3:
         //shadow point
@@ -269,37 +289,92 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_slider_1->setVisible(true);
         ui.filter_input_1->setRange(0,1);
         ui.filter_input_1->setSingleStep(0.001);
+        continously_update_filter_flag = false;
         break;
     case 4:
         //normal estimation
-        //all blank
-    case 5:
-        //radius outlier removal
         ui.input_label_1->setText("Radius");
         ui.filter_input_1->setVisible(true);
         ui.filter_slider_1->setVisible(true);
+        ui.filter_input_1->setRange(0.001,0.5);
+        ui.filter_input_1->setSingleStep(0.001);
+        continously_update_filter_flag = false;
+        //all blank
+        break;
+    case 5:
+        //statistical outlier removal
+        ui.input_label_1->setText("MeanK");
+        ui.input_label_2->setText("StddevMulThresh");
+        ui.filter_input_1->setVisible(true);
+        ui.filter_slider_1->setVisible(true);
+        ui.filter_input_2->setVisible(true);
+        ui.filter_slider_2->setVisible(true);
+        ui.filter_input_1->setRange(1,100);
+        ui.filter_input_1->setSingleStep(1);
+        ui.filter_input_2->setRange(0.001,1);
+        ui.filter_input_2->setSingleStep(0.001);
+        continously_update_filter_flag = false;
         break;
     default:
         break;
     }
-    this->update();
 }
-
-
-
 
 void MainWindow::on_filter_slider_1_valueChanged(int i){
     double tmp = i/100.0;
-    ui.filter_input_1->setValue(ui.filter_input_1->minimum()+(tmp*(abs(ui.filter_input_1->minimum())+abs(ui.filter_input_1->maximum()))));
+    if(ui.filter_input_1->minimum() < 0){
+        ui.filter_input_1->setValue(ui.filter_input_1->minimum()+(tmp*(abs(ui.filter_input_1->minimum())+abs(ui.filter_input_1->maximum()))));
+    }
+    else{
+        ui.filter_input_1->setValue(ui.filter_input_1->minimum()+(tmp*(ui.filter_input_1->maximum()-ui.filter_input_1->minimum())));
+    }
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
 }
 void MainWindow::on_filter_slider_2_valueChanged(int i){
     double tmp = i/100.0;
-    ui.filter_input_2->setValue(ui.filter_input_2->minimum()+(tmp*(abs(ui.filter_input_2->minimum())+abs(ui.filter_input_2->maximum()))));
+    if(ui.filter_input_2->minimum() < 0){
+        ui.filter_input_2->setValue(ui.filter_input_2->minimum()+(tmp*(abs(ui.filter_input_2->minimum())+abs(ui.filter_input_2->maximum()))));
+    }
+    else{
+        ui.filter_input_2->setValue(ui.filter_input_2->minimum()+(tmp*(ui.filter_input_2->maximum()-ui.filter_input_2->minimum())));
+    }
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
 }
 void MainWindow::on_filter_slider_3_valueChanged(int i){
     double tmp = i/100.0;
-    ui.filter_input_3->setValue(ui.filter_input_3->minimum()+(tmp*(abs(ui.filter_input_3->minimum())+abs(ui.filter_input_3->maximum()))));
+    if(ui.filter_input_3->minimum() < 0){
+        ui.filter_input_3->setValue(ui.filter_input_3->minimum()+(tmp*(abs(ui.filter_input_3->minimum())+abs(ui.filter_input_3->maximum()))));
+    }
+    else{
+        ui.filter_input_3->setValue(ui.filter_input_3->minimum()+(tmp*(ui.filter_input_3->maximum()-ui.filter_input_3->minimum())));
+    }
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
 }
+
+void MainWindow::on_filter_input_1_valueChanged(double d){
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
+}
+
+void MainWindow::on_filter_input_2_valueChanged(double d){
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
+}
+
+void MainWindow::on_filter_input_3_valueChanged(double d){
+    if(continously_update_filter_flag){
+        Q_EMIT on_run_action_button_clicked(true);
+    }
+}
+
 void MainWindow::hide_all_filter_inputs(){
     ui.filter_input_1->setVisible(false);
     ui.filter_input_2->setVisible(false);

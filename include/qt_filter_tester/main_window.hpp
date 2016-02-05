@@ -64,6 +64,7 @@ public:
     void init_ui_elemets();
 
 public Q_SLOTS:
+    //auto connection
     void on_load_file_button_clicked(bool check);
     void on_run_action_button_clicked(bool check);
     void on_save_cloud_button_clicked(bool check);
@@ -72,6 +73,11 @@ public Q_SLOTS:
     void on_filter_slider_1_valueChanged(int i);
     void on_filter_slider_2_valueChanged(int i);
     void on_filter_slider_3_valueChanged(int i);
+    void on_filter_input_1_valueChanged(double d);
+    void on_filter_input_2_valueChanged(double d);
+    void on_filter_input_3_valueChanged(double d);
+
+    //manual connection
 
 private:
     Ui::MainWindowDesign ui;
@@ -80,20 +86,15 @@ private:
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer2;
     pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud;
     pcl::PointCloud<pcl::PointXYZ>::Ptr output_cloud;
-    pcl::PassThrough<pcl::PointXYZ> passfilter;
-    pcl::VoxelGrid<pcl::PointXYZ> voxelfilter;
-    pcl::MedianFilter<pcl::PointXYZ> medianfilter;
-    pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_Outlier_filter;
     std::vector<pcl::visualization::Camera> cam;
     bool filter_changed_flag;
+    bool continously_update_filter_flag;
 
     QVTKWidget *w1;
     QVTKWidget *w2;
     QStringListModel *loggingModel;
     QString loggstring;
     PclFilters *filters;
-    Eigen::Affine3f viewerpose;
-
 };
 
 }
