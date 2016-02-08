@@ -11,9 +11,6 @@ PclFilters::PclFilters(QObject *parent):
 
 PclFilters::~PclFilters() {}
 
-/*
- * Returns a visualizer based on the input pointcloud
- */
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     viewer.reset(new pcl::visualization::PCLVisualizer ("3D Viewer",false));
