@@ -1,0 +1,20 @@
+actions: []
+authors: Kristoffer
+brief: ''
+bugtracker: ''
+depends:
+- catkin
+- roscpp
+- libqt4-dev
+- libQVTWidget
+- libpcl-all-dev
+- qt_build
+- libpcl-all
+description: qt_filter_tester
+license: BSD
+maintainers: Kristoffer <Kristoffer@gmail.com>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: ''
