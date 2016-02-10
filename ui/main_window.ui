@@ -403,6 +403,31 @@
       <string>Filter inputs</string>
      </property>
     </widget>
+    <widget class="QCheckBox" name="filter_checkbox_1">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>120</y>
+       <width>171</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+    </widget>
+    <zorder>filter_checkbox_1</zorder>
+    <zorder>filter_slider_3</zorder>
+    <zorder>filter_slider_2</zorder>
+    <zorder>input_label_1</zorder>
+    <zorder>filter_input_2</zorder>
+    <zorder>passthrough_input_3</zorder>
+    <zorder>input_label_2</zorder>
+    <zorder>filter_slider_1</zorder>
+    <zorder>filter_input_1</zorder>
+    <zorder>input_label_3</zorder>
+    <zorder>filter_input_3</zorder>
+    <zorder>label_3</zorder>
    </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">

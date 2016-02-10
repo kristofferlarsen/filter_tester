@@ -17,11 +17,11 @@ using namespace Qt;
 
 
 MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
-	: QMainWindow(parent)
-	, qnode(argc,argv)
+    : QMainWindow(parent)
+    , qnode(argc,argv)
 {
     ui.setupUi(this);
-	setWindowIcon(QIcon(":/images/icon.png"));
+    setWindowIcon(QIcon(":/images/icon.png"));
     QObject::connect(&qnode, SIGNAL(rosShutdown()), this, SLOT(close()));
     qnode.init();
     this->showMaximized();
@@ -36,7 +36,7 @@ MainWindow::~MainWindow() {}
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	QMainWindow::closeEvent(event);
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::init_ui_elemets(){
@@ -47,6 +47,8 @@ void MainWindow::init_ui_elemets(){
     ui.filter_selection_box->addItem("ShadowPoints");
     ui.filter_selection_box->addItem("Normal Estimation");
     ui.filter_selection_box->addItem("Statistical outlier removal");
+    ui.filter_selection_box->addItem("Plane model segmentation");
+    ui.filter_selection_box->addItem("ClusterExtraction");
     ui.passthrough_input_3->addItem("x");
     ui.passthrough_input_3->addItem("y");
     ui.passthrough_input_3->addItem("z");
@@ -100,7 +102,7 @@ void MainWindow::display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisua
     output_cloud = filters->get_filtered_cloud();
     viewer2->getCameras(cam);
     viewer2 = viewer;
-    w2->SetRenderWindow(viewer2->getRenderWindow());  
+    w2->SetRenderWindow(viewer2->getRenderWindow());
     viewer2->setCameraPosition(cam[0].pos[0],cam[0].pos[1],cam[0].pos[2],cam[0].view[0],cam[0].view[1],cam[0].view[2]);
     filter_changed_flag = false;
     ui.save_cloud_button->setEnabled(true);
@@ -165,6 +167,12 @@ void MainWindow::print_filter_values(){
         loggstring.append(QString::number(ui.filter_input_2->value()));
         print_to_logg(loggstring);
         break;
+    case 6:
+        //segmentation test
+        break;
+    case 7:
+        //cluster extraction
+        break;
     default:
         break;
     }
@@ -199,6 +207,8 @@ void MainWindow::on_load_file_button_clicked(bool check){
 
 void MainWindow::on_run_action_button_clicked(bool check){
     loggstring = "";
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_cloud_rgb,plane_rgb;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cluster_cloud, plane;
     switch(ui.filter_selection_box->currentIndex()){
     case 0:
         // passthrough
@@ -239,6 +249,32 @@ void MainWindow::on_run_action_button_clicked(bool check){
     case 5:
         //statistical outlier removal
         display_viewer_2(filters->statistical_outlier_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        break;
+    case 6:
+        //segmentation
+        plane = filters->plane_segmentation(input_cloud,ui.filter_input_1->value());
+        plane_rgb = filters->color_cloud(plane,255,0,0);
+        if(!ui.filter_checkbox_1->isChecked()){
+            //display plane and cloud
+            cluster_cloud_rgb = filters->color_cloud(input_cloud,255,255,255);
+            *cluster_cloud_rgb += *plane_rgb;
+            plane_rgb = cluster_cloud_rgb;
+
+        }
+        display_viewer_2(filters->visualize_rgb(plane_rgb));
+        break;
+    case 7:
+        //cluster extraction
+        plane = filters->plane_segmentation(input_cloud,ui.filter_input_1->value());
+        cluster_cloud = filters->combine_clouds(filters->cluster_extraction(input_cloud,ui.filter_input_1->value()));
+        plane_rgb = filters->color_cloud(plane,255,0,0);
+        cluster_cloud_rgb = filters->color_cloud(cluster_cloud,0,0,255);
+        if(ui.filter_checkbox_1->isChecked()){
+            //add plane to the point cloud
+            *cluster_cloud_rgb += *plane_rgb;
+        }
+
+        display_viewer_2(filters->visualize_rgb(cluster_cloud_rgb));
         break;
     default:
         loggstring.append("Not implemented");
@@ -358,6 +394,28 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_2->setRange(0.001,1);
         ui.filter_input_2->setSingleStep(0.001);
         break;
+    case 6:
+        //segmentation
+        continously_update_filter_flag = false;
+        ui.input_label_1->setText("Point distance");
+        ui.filter_input_1->setVisible(true);
+        ui.filter_slider_1->setVisible(true);
+        ui.filter_input_1->setRange(0.001,0.02);
+        ui.filter_input_1->setSingleStep(0.001);
+        ui.filter_checkbox_1->setText("Show only plane");
+        ui.filter_checkbox_1->setVisible(true);
+        break;
+    case 7:
+        continously_update_filter_flag = false;
+        ui.input_label_1->setText("Point distance");
+        ui.filter_input_1->setVisible(true);
+        ui.filter_slider_1->setVisible(true);
+        ui.filter_checkbox_1->setVisible(true);
+        ui.filter_checkbox_1->setText("Show plane");
+        ui.filter_input_1->setRange(0.001,0.02);
+        ui.filter_input_1->setSingleStep(0.001);
+        //cluster extraction
+        break;
     default:
         break;
     }
@@ -430,6 +488,7 @@ void MainWindow::hide_all_filter_inputs(){
     ui.input_label_1->setText("");
     ui.input_label_2->setText("");
     ui.input_label_3->setText("");
+    ui.filter_checkbox_1->setVisible(false);
 }
 }
 
