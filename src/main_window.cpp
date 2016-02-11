@@ -261,7 +261,9 @@ void MainWindow::on_run_action_button_clicked(bool check){
             plane_rgb = cluster_cloud_rgb;
 
         }
+
         display_viewer_2(filters->visualize_rgb(plane_rgb));
+
         break;
     case 7:
         //cluster extraction
@@ -273,7 +275,6 @@ void MainWindow::on_run_action_button_clicked(bool check){
             //add plane to the point cloud
             *cluster_cloud_rgb += *plane_rgb;
         }
-
         display_viewer_2(filters->visualize_rgb(cluster_cloud_rgb));
         break;
     default:
