@@ -251,8 +251,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::statistical_outlier(pcl::PointCl
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::combine_clouds(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> input)
 {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cluster_cloud;
-    cluster_cloud = input.at(0);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cluster_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    *cluster_cloud = *input.at(0);
     for (unsigned i=0; i<input.size(); i++){
         *cluster_cloud += *(pcl::PointCloud<pcl::PointXYZ>::Ptr) input.at(i);
     }

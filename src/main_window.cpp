@@ -322,12 +322,11 @@ void MainWindow::on_test_button_clicked(bool check)
     int index = ui.bla->value();
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
     clusters = filters->cluster_extraction(tmpcloud,0.01);
-    print_to_logg(QString::number(clusters.size()));
+    ui.bla->setRange(0,clusters.size()-1);
     display_viewer_2(filters->visualize(clusters.at(index)));
     pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
     descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
-
-
+    print_to_logg(QString::number(descriptors->size()));
 }
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
