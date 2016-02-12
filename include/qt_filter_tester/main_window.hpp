@@ -70,6 +70,7 @@ public Q_SLOTS:
     void on_run_action_button_clicked(bool check);
     void on_save_cloud_button_clicked(bool check);
     void on_reload_button_clicked(bool check);
+    void on_test_button_clicked(bool check);
     void on_filter_selection_box_currentIndexChanged(int i);
     void on_filter_slider_1_valueChanged(int i);
     void on_filter_slider_2_valueChanged(int i);
@@ -77,7 +78,6 @@ public Q_SLOTS:
     void on_filter_input_1_valueChanged(double d);
     void on_filter_input_2_valueChanged(double d);
     void on_filter_input_3_valueChanged(double d);
-
     //manual connection
 
 private:

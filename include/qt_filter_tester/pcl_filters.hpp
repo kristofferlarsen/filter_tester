@@ -22,6 +22,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/cvfh.h>
 
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -209,6 +210,14 @@ public:
      * \return A point cloud containing all clouds in the input vector
      */
     pcl::PointCloud<pcl::PointXYZ>::Ptr combine_clouds(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> input);
+
+    /*!
+     * \brief Generates the CVFH descriptors for an object (cluster)
+     * \param object Input point cloud, cluster of the object
+     * \param normals Input normal cloud of the object
+     * \return A CVFH Descriptor
+     */
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr compute_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr object, pcl::PointCloud<pcl::Normal>::Ptr normals);
 
 
 private:

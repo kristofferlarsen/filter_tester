@@ -29,6 +29,7 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filters = new PclFilters();
     filter_changed_flag = true;
     init_ui_elemets();
+    Q_EMIT on_test_button_clicked(true);
 }
 
 MainWindow::~MainWindow() {}
@@ -307,6 +308,26 @@ void MainWindow::on_reload_button_clicked(bool check){
     print_to_logg(tmp);
     display_viewer_1(savefile);
     print_filter_values();
+}
+
+void MainWindow::on_test_button_clicked(bool check)
+{
+    //TEST SECTION NSFW
+    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
+    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
+    {
+        print_to_logg("Could not load file");
+        return;
+    }
+    int index = ui.bla->value();
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    clusters = filters->cluster_extraction(tmpcloud,0.01);
+    print_to_logg(QString::number(clusters.size()));
+    display_viewer_2(filters->visualize(clusters.at(index)));
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
+    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
+
+
 }
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){

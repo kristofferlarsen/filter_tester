@@ -121,29 +121,13 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(
     ec.setInputCloud (incloud);
     ec.extract (cluster_indices);
 
-    int j = 0;
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-    for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
-    {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-        for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-            cloud_cluster->points.push_back (incloud->points[*pit]);
-        cloud_cluster->width = cloud_cluster->points.size ();
-        cloud_cluster->height = 1;
-        cloud_cluster->is_dense = true;
-        clusters.push_back(cloud_cluster);
-        //add all clusters to a single point cloud as the last edited point cloud
-        if(j == 0)
-        {
-          outcloud = cloud_cluster;
-        }
-        else
-        {
-            *outcloud += *cloud_cluster;
-        }
-        j++;
+    for(int i = 0; i< cluster_indices.size(); i++){
+        pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud (new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::copyPointCloud(*incloud,cluster_indices[i],*tmpcloud);
+        clusters.push_back(tmpcloud);
     }
-    filteredCloud = outcloud;
+    filteredCloud = combine_clouds(clusters);
     return (clusters);
 }
 
@@ -274,6 +258,29 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::combine_clouds(std::vector<pcl::
     }
     return (cluster_cloud);
 
+}
+
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr object, pcl::PointCloud<pcl::Normal>::Ptr normals)
+{
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors(new pcl::PointCloud<pcl::VFHSignature308>);
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
+    // CVFH estimation object.
+    pcl::CVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> cvfh;
+    cvfh.setInputCloud(object);
+    cvfh.setInputNormals(normals);
+    cvfh.setSearchMethod(kdtree);
+    // Set the maximum allowable deviation of the normals,
+    // for the region segmentation step.
+    cvfh.setEPSAngleThreshold(5.0 / 180.0 * M_PI); // 5 degrees.
+    // Set the curvature threshold (maximum disparity between curvatures),
+    // for the region segmentation step.
+    cvfh.setCurvatureThreshold(1.0);
+    // Set to true to normalize the bins of the resulting histogram,
+    // using the total number of points. Note: enabling it will make CVFH
+    // invariant to scale just like VFH, but the authors encourage the opposite.
+    cvfh.setNormalizeBins(false);
+    cvfh.compute(*descriptors);
+    return (descriptors);
 }
 }
 
