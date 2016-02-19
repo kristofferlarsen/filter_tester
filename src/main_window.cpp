@@ -29,11 +29,9 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filters = new PclFilters();
     filter_changed_flag = true;
     init_ui_elemets();
-    Q_EMIT on_test_button_clicked(true);
 }
 
 MainWindow::~MainWindow() {}
-
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -50,6 +48,7 @@ void MainWindow::init_ui_elemets(){
     ui.filter_selection_box->addItem("Statistical outlier removal");
     ui.filter_selection_box->addItem("Plane model segmentation");
     ui.filter_selection_box->addItem("ClusterExtraction");
+    ui.filter_selection_box->addItem("Bilateral filter");
     ui.passthrough_input_3->addItem("x");
     ui.passthrough_input_3->addItem("y");
     ui.passthrough_input_3->addItem("z");
@@ -109,7 +108,6 @@ void MainWindow::display_viewer_2(boost::shared_ptr<pcl::visualization::PCLVisua
     ui.save_cloud_button->setEnabled(true);
     ui.reload_button->setEnabled(true);
 }
-
 
 void MainWindow::print_filter_values(){
     loggstring = "";
@@ -174,6 +172,9 @@ void MainWindow::print_filter_values(){
     case 7:
         //cluster extraction
         break;
+    case 8:
+        //bilateral filtering
+        break;
     default:
         break;
     }
@@ -214,11 +215,11 @@ void MainWindow::on_run_action_button_clicked(bool check){
     case 0:
         // passthrough
         if(filter_changed_flag){
-            display_viewer_2(filters->passthrough_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()));
+            display_viewer_2(filters->visualize(filters->passthrough_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString())));
         }
         else{
             //update pointcloud in viewer2
-            viewer2->updatePointCloud(filters->passthrough(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()),"sample cloud");
+            viewer2->updatePointCloud(filters->passthrough_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value(),ui.passthrough_input_3->currentText().toStdString()),"sample cloud");
             output_cloud = filters->get_filtered_cloud();
             w2->update();
         }
@@ -227,29 +228,29 @@ void MainWindow::on_run_action_button_clicked(bool check){
     case 1:
         //voxelGrid
         if(filter_changed_flag){
-            display_viewer_2(filters->voxelgrid_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()));
+            display_viewer_2(filters->visualize(filters->voxel_grid_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value())));
         }
         else{
-            viewer2->updatePointCloud(filters->voxelgrid(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()),"sample cloud");
+            viewer2->updatePointCloud(filters->voxel_grid_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_1->value(),ui.filter_input_1->value()),"sample cloud");
             output_cloud = filters->get_filtered_cloud();
             w2->update();
         }
         break;
     case 2:
         //median
-        display_viewer_2(filters->median_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        display_viewer_2(filters->visualize(filters->median_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value())));
         break;
     case 3:
         //shadow points
-        display_viewer_2(filters->shadowpoint_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        display_viewer_2(filters->visualize(filters->shadowpoint_removal_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value())));
         break;
     case 4:
         //normal estimation
-        display_viewer_2(filters->normalsVis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        display_viewer_2(filters->visualize_normals(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
         break;
     case 5:
         //statistical outlier removal
-        display_viewer_2(filters->statistical_outlier_vis(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value()));
+        display_viewer_2(filters->visualize(filters->statistical_outlier_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value())));
         break;
     case 6:
         //segmentation
@@ -277,6 +278,10 @@ void MainWindow::on_run_action_button_clicked(bool check){
             *cluster_cloud_rgb += *plane_rgb;
         }
         display_viewer_2(filters->visualize_rgb(cluster_cloud_rgb));
+        break;
+    case 8:
+        //bilateral filtering
+        display_viewer_2(filters->visualize(filters->bilateral_filter(input_cloud,ui.filter_input_1->value(),ui.filter_input_2->value())));
         break;
     default:
         loggstring.append("Not implemented");
@@ -313,20 +318,49 @@ void MainWindow::on_reload_button_clicked(bool check){
 void MainWindow::on_test_button_clicked(bool check)
 {
     //TEST SECTION NSFW
-    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
-    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
-    {
-        print_to_logg("Could not load file");
-        return;
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
+//    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
+//    {
+//        print_to_logg("Could not load file");
+//        return;
+//    }
+//    int index = ui.bla->value();
+//    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+//    clusters = filters->cluster_extraction(tmpcloud,0.01);
+//    ui.bla->setRange(0,clusters.size()-1);
+//    display_viewer_2(filters->visualize(clusters.at(index)));
+//    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
+//    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
+
+    //pcl::PolygonMesh mesh;
+    //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_from_stl (new pcl::PointCloud<pcl::PointXYZ>());
+    //std::cout << fileName.toStdString() << std::endl;
+    //pcl::io::loadPolygonFileSTL(fileName.toStdString(),mesh);
+    //pcl::fromPCLPointCloud2(mesh.cloud,*cloud_from_stl);
+
+    ray_trace_loader = new RayTraceLoader("test");
+    ray_trace_loader->setPath(ros::package::getPath("qt_filter_tester") + "/trace_clouds/");
+
+    std::vector<RayTraceCloud> clouds;
+
+    //ray_trace_loader->setCloudResolution(200);
+    std::vector<RayTracedCloud_descriptors> defined_clouds;
+
+    clouds = ray_trace_loader->getPointClouds(true);
+    for(int i = 0; i< clouds.size(); i++){
+        RayTracedCloud_descriptors tmp;
+        RayTraceCloud current = clouds.at(i);
+        tmp.cloud = current.cloud;
+        tmp.enthropy = current.enthropy;
+        tmp.pose = current.pose;
+        tmp.descriptor = filters->compute_cvfh_descriptors(tmp.cloud);
+        defined_clouds.push_back(tmp);
     }
-    int index = ui.bla->value();
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-    clusters = filters->cluster_extraction(tmpcloud,0.01);
-    ui.bla->setRange(0,clusters.size()-1);
-    display_viewer_2(filters->visualize(clusters.at(index)));
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
-    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
-    print_to_logg(QString::number(descriptors->size()));
+
+    pcl::visualization::PCLPlotter plotter;
+    RayTracedCloud_descriptors tmp = defined_clouds.at(0);
+    plotter.addFeatureHistogram(*filters->compute_ourcvfh_descriptors(tmp.cloud),308);
+    plotter.plot();
 }
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
@@ -437,6 +471,19 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_1->setSingleStep(0.001);
         //cluster extraction
         break;
+    case 8:
+        //bilateral filtering
+        continously_update_filter_flag = false;
+        ui.input_label_1->setText("SigmaS");
+        ui.input_label_2->setText("SigmaR");
+        ui.filter_input_1->setVisible(true);
+        ui.filter_input_2->setVisible(true);
+        ui.filter_slider_1->setVisible(true);
+        ui.filter_slider_2->setVisible(true);
+        ui.filter_input_1->setRange(0.001,5);
+        ui.filter_input_2->setRange(0.001,5);
+        ui.filter_input_1->setSingleStep(0.001);
+        ui.filter_input_2->setSingleStep(0.001);
     default:
         break;
     }
@@ -455,6 +502,7 @@ void MainWindow::on_filter_slider_1_valueChanged(int i){
         Q_EMIT on_run_action_button_clicked(true);
     }
 }
+
 void MainWindow::on_filter_slider_2_valueChanged(int i){
     double tmp = i/100.0;
     if(ui.filter_input_2->minimum() < 0){
@@ -467,6 +515,7 @@ void MainWindow::on_filter_slider_2_valueChanged(int i){
         Q_EMIT on_run_action_button_clicked(true);
     }
 }
+
 void MainWindow::on_filter_slider_3_valueChanged(int i){
     double tmp = i/100.0;
     if(ui.filter_input_3->minimum() < 0){

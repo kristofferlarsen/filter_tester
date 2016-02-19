@@ -28,7 +28,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize_rgb(p
     return (viewer);
 }
 
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius, int numOfNormals)
+boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize_normals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius, int numOfNormals)
 {
     viewer.reset(new pcl::visualization::PCLVisualizer ("3D Viewer",false));
     viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
@@ -37,31 +37,6 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::normalsVis(pcl:
     viewer->initCameraParameters ();
     filteredCloud = cloud;
     return (viewer);
-}
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::passthrough_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis)
-{
-    return (visualize(passthrough(cloud,min,max,axis)));
-}
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::median_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement)
-{
-    return (visualize(median(cloud,window_size,max_allowed_movement)));
-}
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::voxelgrid_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz)
-{
-    return (visualize(voxelgrid(cloud,lx,ly,lz)));
-}
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::shadowpoint_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius)
-{
-    return (visualize(shadowpoint(cloud, threshold, radius)));
-}
-
-boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::statistical_outlier_vis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold)
-{
-    return (visualize(statistical_outlier(cloud,meanK,std_deviation_threshold)));
 }
 
 std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double distance)
@@ -194,9 +169,10 @@ pcl::PointCloud<pcl::Normal>::Ptr PclFilters::get_normals(pcl::PointCloud<pcl::P
     return (normals_out);
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::passthrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis)
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::passthrough_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+    passfilter.setKeepOrganized(true);
     passfilter.setInputCloud(cloud);
     passfilter.setFilterFieldName(axis);
     passfilter.setFilterLimits(min,max);
@@ -205,7 +181,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::passthrough(pcl::PointCloud<pcl:
     return (cloud_filtered);
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::voxelgrid(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz)
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::voxel_grid_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
     voxelfilter.setInputCloud(cloud);
@@ -215,7 +191,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::voxelgrid(pcl::PointCloud<pcl::P
     return (cloud_filtered);
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::median(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement)
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::median_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
     medianfilter.setInputCloud(cloud);
@@ -226,10 +202,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::median(pcl::PointCloud<pcl::Poin
     return (cloud_filtered);
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::shadowpoint(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius)
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::shadowpoint_removal_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
     shadowpoint_filter.setInputCloud(cloud);
+    shadowpoint_filter.setKeepOrganized(true);
     shadowpoint_filter.setThreshold(threshold);
     shadowpoint_filter.setNormals(get_normals(cloud, radius));
     shadowpoint_filter.filter(*cloud_filtered);
@@ -237,14 +214,14 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::shadowpoint(pcl::PointCloud<pcl:
     return (cloud_filtered);
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::statistical_outlier(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold)
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::statistical_outlier_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-    //statistical_outlier_filter.setKeepOrganized(true);
-    statistical_outlier_filter.setInputCloud(cloud);
-    statistical_outlier_filter.setMeanK(meanK);
-    statistical_outlier_filter.setStddevMulThresh(std_deviation_threshold);
-    statistical_outlier_filter.filter(*cloud_filtered);
+    statistical_outlier.setKeepOrganized(true);
+    statistical_outlier.setInputCloud(cloud);
+    statistical_outlier.setMeanK(meanK);
+    statistical_outlier.setStddevMulThresh(std_deviation_threshold);
+    statistical_outlier.filter(*cloud_filtered);
     filteredCloud = cloud_filtered;
     return (cloud_filtered);
 }
@@ -260,13 +237,14 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::combine_clouds(std::vector<pcl::
 
 }
 
-pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr object, pcl::PointCloud<pcl::Normal>::Ptr normals)
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors(new pcl::PointCloud<pcl::VFHSignature308>);
     pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::Normal>::Ptr normals = get_normals(cloud,0.01);
     // CVFH estimation object.
     pcl::CVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> cvfh;
-    cvfh.setInputCloud(object);
+    cvfh.setInputCloud(cloud);
     cvfh.setInputNormals(normals);
     cvfh.setSearchMethod(kdtree);
     // Set the maximum allowable deviation of the normals,
@@ -282,6 +260,86 @@ pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(
     cvfh.compute(*descriptors);
     return (descriptors);
 }
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::bilateral_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double sigmaS, double sigmaR)
+{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::FastBilateralFilterOMP<pcl::PointXYZ> bifilter;
+    bifilter.setInputCloud(cloud);
+    bifilter.setSigmaR(sigmaR);
+    bifilter.setSigmaS(sigmaS);
+    bifilter.filter(*cloud_filtered);
+    filteredCloud = cloud_filtered;
+    return (cloud_filtered);
+}
+
+std::vector<RayTracedCloud_descriptors> PclFilters::get_descriptors(std::vector<RayTraceCloud> inclouds)
+{
+    //ray_trace_loader->setCloudResolution(200);
+    std::vector<RayTracedCloud_descriptors> defined_clouds;
+
+    for(int i = 0; i< inclouds.size(); i++){
+        RayTracedCloud_descriptors tmp;
+        RayTraceCloud current = inclouds.at(i);
+        tmp.cloud = current.cloud;
+        tmp.enthropy = current.enthropy;
+        tmp.pose = current.pose;
+        tmp.descriptor = compute_cvfh_descriptors(tmp.cloud);
+        defined_clouds.push_back(tmp);
+    }
+    return (defined_clouds);
+}
+
+pcl::PointCloud<pcl::ESFSignature640>::Ptr PclFilters::compute_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+    pcl::PointCloud<pcl::ESFSignature640>::Ptr descriptor(new pcl::PointCloud<pcl::ESFSignature640>);
+    pcl::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> esf;
+    esf.setInputCloud(cloud);
+    esf.compute(*descriptor);
+    return (descriptor);
+}
+
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors(new pcl::PointCloud<pcl::VFHSignature308>);
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
+    pcl::OURCVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> ourcvfh;
+
+    ourcvfh.setInputCloud(cloud);
+    ourcvfh.setInputNormals(get_normals(cloud,0.03));
+    ourcvfh.setSearchMethod(kdtree);
+    ourcvfh.setEPSAngleThreshold(5.0 / 180.0 * M_PI); // 5 degrees.
+    ourcvfh.setCurvatureThreshold(1.0);
+    ourcvfh.setNormalizeBins(false);
+    // Set the minimum axis ratio between the SGURF axes. At the disambiguation phase,
+    // this will decide if additional Reference Frames need to be created, if ambiguous.
+    ourcvfh.setAxisRatio(0.8);
+    ourcvfh.compute(*descriptors);
+    return (descriptors);
+}
+
+pcl::PointCloud<pcl::GFPFHSignature16>::Ptr PclFilters::compute_gfpfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+    pcl::PointCloud<pcl::PointXYZL>::Ptr object(new pcl::PointCloud<pcl::PointXYZL>);
+    pcl::PointCloud<pcl::GFPFHSignature16>::Ptr descriptor(new pcl::PointCloud<pcl::GFPFHSignature16>);
+
+    pcl::copyPointCloud(*cloud,*object);
+
+    // Note: you should now perform classification on the cloud's points. See the
+    // original paper for more details. For this example, we will now consider 4
+    // different classes, and randomly label each point as one of them.
+    for (size_t i = 0; i < object->points.size(); ++i)
+    {
+        object->points[i].label = 1 + i % 4;
+    }
+
+    pcl::GFPFHEstimation<pcl::PointXYZL, pcl::PointXYZL, pcl::GFPFHSignature16> gfpfh;
+    gfpfh.setInputCloud(object);
+    gfpfh.setInputLabels(object);
+    gfpfh.setOctreeLeafSize(0.01);
+    gfpfh.setNumberOfClasses(4);
+    gfpfh.compute(*descriptor);
+
+    return (descriptor);
+}
+
 }
 
 

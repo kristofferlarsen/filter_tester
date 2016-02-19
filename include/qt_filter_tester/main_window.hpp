@@ -17,23 +17,29 @@
 #include "ui_main_window.h"
 #include "pcl_filters.hpp"
 #include "qnode.hpp"
+#include "point_cloud_ray_trace.hpp"
 
 #include <vtkRenderWindow.h>
 #include <QVTKWidget.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/pcl_plotter.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/file_io.h>
+#include <pcl/io/ply_io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/common/common.h>
+
+#include <pcl/io/vtk_lib_io.h>
 
 #include <eigen3/Eigen/Core>
 
 #include <cmath>
 #include <iostream>
 #include <stdlib.h>
+
 
 /*****************************************************************************
 ** Namespace
@@ -96,6 +102,7 @@ private:
     QStringListModel *loggingModel;
     QString loggstring;
     PclFilters *filters;
+    RayTraceLoader *ray_trace_loader;
 };
 
 }
