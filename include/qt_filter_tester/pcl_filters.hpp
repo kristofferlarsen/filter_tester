@@ -21,6 +21,8 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/fast_bilateral_omp.h>
 
+#include <pcl/kdtree/kdtree_flann.h>
+
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
@@ -28,6 +30,10 @@
 #include <pcl/features/gfpfh.h>
 #include <pcl/features/our_cvfh.h>
 #include <pcl/features/esf.h>
+#include "pcl/features/fpfh.h"
+#include <pcl/features/fpfh_omp.h>
+
+#include "pcl/keypoints/sift_keypoint.h"
 
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -53,6 +59,18 @@ struct RayTracedCloud_descriptors {
     pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptor; /*!< The CVFH descriptor for the cloud */
 };
 
+
+/*!
+ * \brief A different object model.
+ */
+struct ObjectModel {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr points;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints;
+    pcl::PointCloud<pcl::Normal>::Ptr normals;
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors;
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptors;
+};
+
 class PclFilters : public QObject{
 Q_OBJECT
 
@@ -60,6 +78,25 @@ public:
 
     PclFilters(QObject *parent = 0);
     ~PclFilters();
+
+
+
+    int recognizePoints(pcl::PointCloud<pcl::PointXYZ>::Ptr input);
+
+    std::vector<ObjectModel> populate_models(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                            float min_scale,
+                                                            int nr_octaves,
+                                                            int nr_scales_per_octave,
+                                                            float min_contrast);
+
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr calculate_local_descritor(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                         pcl::PointCloud<pcl::Normal>::Ptr normal,
+                                                                         pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints,
+                                                                         float feature_radius);
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals);
+
 
     /*!
      * \brief Creates a PCL Visualizer containing the input cloud
@@ -207,21 +244,21 @@ public:
      * \param cloud Input point cloud
      * \return ESDSignature640 descriptor for the input point cloud
      */
-    pcl::PointCloud<pcl::ESFSignature640>::Ptr compute_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    pcl::PointCloud<pcl::ESFSignature640>::Ptr calculate_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
     /*!
      * \brief Returns the ourcvfh descriptor for a pcl point cloud
      * \param cloud Input point cloud
      * \return OurCVFH descriptor for the input point cloud
      */
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr compute_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normal);
 
     /*!
      * \brief Returns the gfpfh descriptor for a pcl point cloud
      * \param cloud Input point cloud
      * \return GFPFH descriptor for the input point cloud
      */
-    pcl::PointCloud<pcl::GFPFHSignature16>::Ptr compute_gfpfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+    pcl::PointCloud<pcl::GFPFHSignature16>::Ptr calculate_gfpfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
 
 
@@ -233,6 +270,7 @@ private:
     pcl::MedianFilter<pcl::PointXYZ> medianfilter; //!< A pcl median filter object.
     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_outlier; //!< A pcl statistical outlier removal filter object.
     pcl::ShadowPoints<pcl::PointXYZ, pcl::Normal> shadowpoint_filter; //!< A pcl shadowpoints removal filter object.
+    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr kdtree_;
 
 
 public Q_SLOTS:

@@ -338,29 +338,67 @@ void MainWindow::on_test_button_clicked(bool check)
     //pcl::io::loadPolygonFileSTL(fileName.toStdString(),mesh);
     //pcl::fromPCLPointCloud2(mesh.cloud,*cloud_from_stl);
 
-    ray_trace_loader = new RayTraceLoader("test");
+    ray_trace_loader = new RayTraceLoader("THINGY2");
     ray_trace_loader->setPath(ros::package::getPath("qt_filter_tester") + "/trace_clouds/");
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> temp;
+    temp = filters->cluster_extraction(input_cloud,0.014);
+
+    //display_viewer_2(filters->visualize(temp.at(0)));
 
     std::vector<RayTraceCloud> clouds;
 
     //ray_trace_loader->setCloudResolution(200);
-    std::vector<RayTracedCloud_descriptors> defined_clouds;
+    //std::vector<RayTracedCloud_descriptors> defined_clouds;
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> yes;
 
+
+    //get the models from the ray traced loader
     clouds = ray_trace_loader->getPointClouds(true);
+    Eigen::Matrix4f scale_model = Eigen::Matrix4f::Identity();
+    scale_model(0,0) = 0.001;
+    scale_model(1,1) = 0.001;
+    scale_model(2,2) = 0.001;
+
+    std::cout << "Scaling cad model" << std::endl;
     for(int i = 0; i< clouds.size(); i++){
-        RayTracedCloud_descriptors tmp;
-        RayTraceCloud current = clouds.at(i);
-        tmp.cloud = current.cloud;
-        tmp.enthropy = current.enthropy;
-        tmp.pose = current.pose;
-        tmp.descriptor = filters->compute_cvfh_descriptors(tmp.cloud);
-        defined_clouds.push_back(tmp);
+        //std::cout << "Scaling cloud: " << i << std::endl;
+        //ObjectModel model_;
+        //QString filename = "/home/minions/Desktop/scaled/Box_";
+        //filename.append(QString::number(i));
+        //filename.append(".pcd");
+        RayTraceCloud hah = clouds.at(i);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp1(new pcl::PointCloud<pcl::PointXYZ>);
+        tmp1 = filters->voxel_grid_filter(hah.cloud,0.001,0.001,0.001);
+        //pcl::transformPointCloud(*tmp1,*tmp,scale_model);
+        //pcl::copyPointCloud(*hah.cloud,*tmp);
+        //model_.points = tmp;
+        //std::cout << "Calculating normals" << std::endl;
+        //model_.normals = filters->get_normals(model_.points,0.05);
+        //std::cout << "Cloud size: " << model_.points->size() << std::endl;
+        //std::cout << "Normals size: " << model_.normals->size() << std::endl;
+        //std::cout << "Calculating keypoints" << std::endl;
+        //model_.keypoints = filters->calculate_keypoints(model_.points, 0.005, 10, 8, 0.0);
+        //std::cout << "Calculating global descriptors" << std::endl;
+        //model_.global_descriptors = filters->compute_ourcvfh_descriptors(model_.points,model_.normals);
+        yes.push_back(tmp1);
     }
 
-    pcl::visualization::PCLPlotter plotter;
-    RayTracedCloud_descriptors tmp = defined_clouds.at(0);
-    plotter.addFeatureHistogram(*filters->compute_ourcvfh_descriptors(tmp.cloud),308);
-    plotter.plot();
+    pcl::PointCloud<pcl::PointXYZ>::Ptr scaled(new pcl::PointCloud<pcl::PointXYZ>);
+    scaled = yes.at(0);
+    display_viewer_2(filters->visualize(scaled));
+
+    std::cout << "Calculating features" << std::endl;
+    std::vector<ObjectModel> models = filters->populate_models(yes);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr match;
+    std::cout << "Matching descriptors" << std::endl;
+
+    int haha = filters->recognizePoints(temp.at(0));
+    ObjectModel matchModel = models.at(haha);
+    match = matchModel.points;
+    display_viewer_2(filters->visualize(match));
+    std::cout << "best match: " << haha << std::endl;
 }
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){

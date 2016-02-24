@@ -11,6 +11,98 @@ PclFilters::PclFilters(QObject *parent):
 
 PclFilters::~PclFilters() {}
 
+
+
+
+int PclFilters::recognizePoints(pcl::PointCloud<pcl::PointXYZ>::Ptr input)
+{
+    ObjectModel inputModel;
+
+    inputModel.points = input;
+    inputModel.normals = get_normals(inputModel.points,0.05);
+
+    inputModel.global_descriptors = calculate_vfh_descriptors(inputModel.points,inputModel.normals);
+    std::vector<int> nn_index(1);
+    std::vector<float> nn_sqr_distance(1);
+    kdtree_->nearestKSearch (inputModel.global_descriptors->points[0],1,nn_index,nn_sqr_distance);
+    int best_match = nn_index[0];
+    std::cout << "nn_sqr_distance: " << nn_sqr_distance[0] << std::endl;
+    return (best_match);
+}
+
+std::vector<ObjectModel> PclFilters::populate_models(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds)
+{
+    std::vector<ObjectModel> models;
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors_(new pcl::PointCloud<pcl::VFHSignature308>);
+
+    for(int i = 0; i< clouds.size(); i++){
+        ObjectModel tmpModel;
+        pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud = clouds.at(i);
+        tmpModel.points = tmpcloud;
+        std::cout << "Cloud nr: " << i << std::endl;
+        std::cout << "Calculating normals" << std::endl;
+        tmpModel.normals = get_normals(tmpModel.points,0.05);
+        //std::cout << "Calculating keypoints" <<  std::endl;
+        //tmpModel.keypoints = calculate_keypoints(tmpModel.points,0.01,10,8,0.0);
+        //std::cout << "Calculating local descriptors" << std::endl;
+        //tmpModel.local_descriptors = calculate_local_descritor(tmpModel.points,tmpModel.normals,tmpModel.keypoints,0.1);
+        std::cout << "Calculating global descriptors" << std::endl;
+        tmpModel.global_descriptors = calculate_vfh_descriptors(tmpModel.points,tmpModel.normals);
+        std::cout << "pushing model to array" << std::endl;
+        models.push_back(tmpModel);
+        *descriptors_ += *(tmpModel.global_descriptors);
+    }
+
+    kdtree_ = pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr (new pcl::KdTreeFLANN<pcl::VFHSignature308>);
+    kdtree_->setInputCloud (descriptors_);
+    return (models);
+}
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                    float min_scale,
+                                                                    int nr_octaves,
+                                                                    int nr_scales_per_octave,
+                                                                    float min_contrast)
+{
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgbcloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::copyPointCloud(*cloud,*rgbcloud);
+    for(int i = 0; i< rgbcloud->size(); i++){
+        rgbcloud->points[i].r = 255;
+        rgbcloud->points[i].g = 255;
+        rgbcloud->points[i].b = 255;
+    }
+    pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift_detect;
+    sift_detect.setSearchMethod (pcl::search::Search<pcl::PointXYZRGB>::Ptr (new pcl::search::KdTree<pcl::PointXYZRGB>));
+    sift_detect.setScales (min_scale, nr_octaves, nr_scales_per_octave);
+    sift_detect.setMinimumContrast (min_contrast);
+    sift_detect.setInputCloud (rgbcloud);
+    pcl::PointCloud<pcl::PointWithScale> keypoints_temp;
+    sift_detect.compute (keypoints_temp);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud (keypoints_temp, *keypoints);
+
+    return (keypoints);
+}
+
+pcl::PointCloud<pcl::FPFHSignature33>::Ptr PclFilters::calculate_local_descritor(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                                 pcl::PointCloud<pcl::Normal>::Ptr normal,
+                                                                                 pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints,
+                                                                                 float feature_radius)
+{
+    pcl::FPFHEstimationOMP<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh_estimation;
+    fpfh_estimation.setNumberOfThreads(8);
+    fpfh_estimation.setSearchMethod (pcl::search::Search<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
+    fpfh_estimation.setRadiusSearch (feature_radius);
+    fpfh_estimation.setSearchSurface (cloud);
+    fpfh_estimation.setInputNormals (normal);
+    fpfh_estimation.setInputCloud (keypoints);
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors (new pcl::PointCloud<pcl::FPFHSignature33>);
+    fpfh_estimation.compute (*local_descriptors);
+
+    return (local_descriptors);
+
+}
+
 boost::shared_ptr<pcl::visualization::PCLVisualizer> PclFilters::visualize(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     viewer.reset(new pcl::visualization::PCLVisualizer ("3D Viewer",false));
@@ -90,7 +182,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
     ec.setClusterTolerance (0.02); // 2cm
-    ec.setMinClusterSize (100);
+    ec.setMinClusterSize (500);
     ec.setMaxClusterSize (25000);
     ec.setSearchMethod (tree);
     ec.setInputCloud (incloud);
@@ -161,6 +253,7 @@ pcl::PointCloud<pcl::Normal>::Ptr PclFilters::get_normals(pcl::PointCloud<pcl::P
     pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);  
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
     pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> norm_est;
+    norm_est.setNumberOfThreads(8);
     norm_est.setSearchMethod(tree);
     norm_est.setRadiusSearch (radius);
     norm_est.setInputCloud (cloud);
@@ -243,21 +336,30 @@ pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(
     pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
     pcl::PointCloud<pcl::Normal>::Ptr normals = get_normals(cloud,0.01);
     // CVFH estimation object.
+
     pcl::CVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> cvfh;
+
     cvfh.setInputCloud(cloud);
+
     cvfh.setInputNormals(normals);
+
     cvfh.setSearchMethod(kdtree);
+
     // Set the maximum allowable deviation of the normals,
     // for the region segmentation step.
     cvfh.setEPSAngleThreshold(5.0 / 180.0 * M_PI); // 5 degrees.
+
     // Set the curvature threshold (maximum disparity between curvatures),
     // for the region segmentation step.
     cvfh.setCurvatureThreshold(1.0);
+
     // Set to true to normalize the bins of the resulting histogram,
     // using the total number of points. Note: enabling it will make CVFH
     // invariant to scale just like VFH, but the authors encourage the opposite.
     cvfh.setNormalizeBins(false);
+
     cvfh.compute(*descriptors);
+
     return (descriptors);
 }
 
@@ -290,7 +392,8 @@ std::vector<RayTracedCloud_descriptors> PclFilters::get_descriptors(std::vector<
     return (defined_clouds);
 }
 
-pcl::PointCloud<pcl::ESFSignature640>::Ptr PclFilters::compute_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+pcl::PointCloud<pcl::ESFSignature640>::Ptr PclFilters::calculate_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+
     pcl::PointCloud<pcl::ESFSignature640>::Ptr descriptor(new pcl::PointCloud<pcl::ESFSignature640>);
     pcl::ESFEstimation<pcl::PointXYZ, pcl::ESFSignature640> esf;
     esf.setInputCloud(cloud);
@@ -298,25 +401,35 @@ pcl::PointCloud<pcl::ESFSignature640>::Ptr PclFilters::compute_esf_descriptors(p
     return (descriptor);
 }
 
-pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::calculate_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normal){
+
     pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors(new pcl::PointCloud<pcl::VFHSignature308>);
     pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
     pcl::OURCVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> ourcvfh;
 
     ourcvfh.setInputCloud(cloud);
-    ourcvfh.setInputNormals(get_normals(cloud,0.03));
+
+    ourcvfh.setInputNormals(normal);
+
     ourcvfh.setSearchMethod(kdtree);
+
     ourcvfh.setEPSAngleThreshold(5.0 / 180.0 * M_PI); // 5 degrees.
-    ourcvfh.setCurvatureThreshold(1.0);
+
+    ourcvfh.setCurvatureThreshold(0.1);
+
     ourcvfh.setNormalizeBins(false);
+
     // Set the minimum axis ratio between the SGURF axes. At the disambiguation phase,
     // this will decide if additional Reference Frames need to be created, if ambiguous.
     ourcvfh.setAxisRatio(0.8);
+
     ourcvfh.compute(*descriptors);
+
     return (descriptors);
 }
 
-pcl::PointCloud<pcl::GFPFHSignature16>::Ptr PclFilters::compute_gfpfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+pcl::PointCloud<pcl::GFPFHSignature16>::Ptr PclFilters::calculate_gfpfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+
     pcl::PointCloud<pcl::PointXYZL>::Ptr object(new pcl::PointCloud<pcl::PointXYZL>);
     pcl::PointCloud<pcl::GFPFHSignature16>::Ptr descriptor(new pcl::PointCloud<pcl::GFPFHSignature16>);
 
@@ -338,6 +451,17 @@ pcl::PointCloud<pcl::GFPFHSignature16>::Ptr PclFilters::compute_gfpfh_descriptor
     gfpfh.compute(*descriptor);
 
     return (descriptor);
+}
+
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals){
+    pcl::VFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> vfh_estimation;
+    vfh_estimation.setSearchMethod (pcl::search::Search<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
+    vfh_estimation.setInputCloud (points);
+    vfh_estimation.setInputNormals (normals);
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptor (new pcl::PointCloud<pcl::VFHSignature308>);
+    vfh_estimation.compute (*global_descriptor);
+
+    return (global_descriptor);
 }
 
 }
