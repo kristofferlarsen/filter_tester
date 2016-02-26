@@ -6,7 +6,6 @@
 #include <QObject>
 #include <iostream>
 #include <boost/thread/thread.hpp>
-#include "point_cloud_ray_trace.hpp"
 
 #include <pcl/common/common_headers.h>
 #include <pcl/io/pcd_io.h>
@@ -45,31 +44,19 @@
 
 
 
-namespace qt_filter_tester {
-
-
-/*!
- * A structure containing all information about a ray trace
- */
-struct RayTracedCloud_descriptors {
-
+struct RayTraceCloud {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud; /*!< The point cloud of the ray trace */
     Eigen::Matrix4f pose; /*!< The pose transformation from the camera to the mesh when the ray trace was generated */
     float enthropy; /*!< The amount of the whole mesh seen in the camera */
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptor; /*!< The CVFH descriptor for the cloud */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints; /*! The clouds keypoints */
+    pcl::PointCloud<pcl::Normal>::Ptr normals; /*! The clouds surface normal */
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors; /*! The clouds local descriptors */
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptors; /*! The clouds global descriptor */
 };
 
 
-/*!
- * \brief A different object model.
- */
-struct ObjectModel {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr points;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints;
-    pcl::PointCloud<pcl::Normal>::Ptr normals;
-    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors;
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptors;
-};
+namespace qt_filter_tester {
+
 
 class PclFilters : public QObject{
 Q_OBJECT
@@ -80,10 +67,10 @@ public:
     ~PclFilters();
 
 
+    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr generate_search_tree(std::vector<RayTraceCloud> models);
 
-    int recognizePoints(pcl::PointCloud<pcl::PointXYZ>::Ptr input);
-
-    std::vector<ObjectModel> populate_models(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds);
+    int match_cloud(RayTraceCloud object_model,
+                    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                                                             float min_scale,
@@ -95,8 +82,11 @@ public:
                                                                          pcl::PointCloud<pcl::Normal>::Ptr normal,
                                                                          pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints,
                                                                          float feature_radius);
+
     pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals);
 
+
+    RayTraceCloud calculate_features(RayTraceCloud inputcloud);
 
     /*!
      * \brief Creates a PCL Visualizer containing the input cloud
@@ -119,7 +109,9 @@ public:
      * \param numOfNormals Integer value for the number of normals to display in the visualizer
      * \return A pcl visualizer containing the input cloud and normals as defined by the input parameters
      */
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualize_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius, int numOfNormals);
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualize_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                            double radius,
+                                                                            int numOfNormals);
 
     /*!
      * \brief Segments out a plane for the input point cloud
@@ -127,7 +119,8 @@ public:
      * \param distance Double value for the maximum distance between points in a plane
      * \return A pcl point cloud containing the points of the segmented plane
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr plane_segmentation(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double distance);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr plane_segmentation(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                           double distance);
 
     /*!
      * \brief Creates a PCL Visualizer containing a point cloud of the clusters extracted from the input cloud using Eucledian cluster extraction
@@ -135,7 +128,8 @@ public:
      * \param distance Double value for the maximum distance between points in a plane
      * \return A pcl visualizer containing the extracted clusters from the input cloud
      */
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double distance);
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                         double distance);
 
     /*!
      * \brief Returns the most recent point cloud handled by the class
@@ -151,7 +145,10 @@ public:
      * \param b Integer value for the blue component of the color
      * \return A RGB point cloud
      */
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int r, int g, int b);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                        int r,
+                                                        int g,
+                                                        int b);
 
     /*!
      * \brief Returns the normals of a Point cloud
@@ -159,7 +156,8 @@ public:
      * \param radius Double value for the search radius of the normal estimation
      * \return The normals of a point cloud
      */
-    pcl::PointCloud<pcl::Normal>::Ptr get_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius);
+    pcl::PointCloud<pcl::Normal>::Ptr get_normals (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                   double radius);
 
     /*!
      * \brief Returns the a point cloud filtered using passthrough filtering
@@ -169,7 +167,10 @@ public:
      * \param axis std::string value for the axis of the filter (lower case)
      * \return A point cloud filtered using passthrough filtering
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr passthrough_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double min, double max, std::string axis);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr passthrough_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                            double min,
+                                                            double max,
+                                                            std::string axis);
 
     /*!
      * \brief Returns the a point cloud filtered using voxel grid filtering
@@ -179,7 +180,10 @@ public:
      * \param lz Double value for the voxel size in the "z" axis of the filter
      * \return A point cloud filtered using voxel grid filtering
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_grid_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double lx, double ly, double lz);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_grid_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                           double lx,
+                                                           double ly,
+                                                           double lz);
 
     /*!
      * \brief Returns the a point cloud filtered using median filtering
@@ -188,7 +192,9 @@ public:
      * \param max_allowed_movement Double value for the maximum allowed movenet of the filter
      * \return A point cloud filtered using median filtering
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr median_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int window_size, double max_allowed_movement);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr median_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                       int window_size,
+                                                       double max_allowed_movement);
 
     /*!
      * \brief Returns the a point cloud filtered using shadow point removal filtering
@@ -197,7 +203,9 @@ public:
      * \param radius Double value for the filter search radius
      * \return A point cloud filtered using shadow point removal filtering
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr shadowpoint_removal_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double threshold, double radius);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr shadowpoint_removal_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                   double threshold,
+                                                                   double radius);
 
     /*!
      * \brief Returns the a point cloud filtered using statistical outlier removal filtering
@@ -206,7 +214,9 @@ public:
      * \param std_deviation_threshold Double value for the standard deviation multiplier for the distance threshold calculation
      * \return A point cloud filtered using statistical outlier removal filtering
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr statistical_outlier_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, int meanK, double std_deviation_threshold);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr statistical_outlier_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                   int meanK,
+                                                                   double std_deviation_threshold);
 
     /*!
      * \brief Combines all clouds in an vector to one cloud
@@ -230,14 +240,9 @@ public:
      * \param sigmaR Double value for the standard deviation parameter
      * \return A point cloud filtered using a bilateral filter
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr bilateral_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double sigmaS, double sigmaR);
-
-    /*!
-     * \brief Calculates the CVFH descriptors for an array of point clouds
-     * \param inclouds Array of point clouds
-     * \return Array of point cloud structs with descriptors
-     */
-    std::vector<RayTracedCloud_descriptors> get_descriptors(std::vector<RayTraceCloud> inclouds);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr bilateral_filter(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                         double sigmaS,
+                                                         double sigmaR);
 
     /*!
      * \brief Returns the esf descriptor for a pcl point cloud
@@ -251,7 +256,8 @@ public:
      * \param cloud Input point cloud
      * \return OurCVFH descriptor for the input point cloud
      */
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::PointCloud<pcl::Normal>::Ptr normal);
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_ourcvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
+                                                                             pcl::PointCloud<pcl::Normal>::Ptr normal);
 
     /*!
      * \brief Returns the gfpfh descriptor for a pcl point cloud
@@ -271,7 +277,6 @@ private:
     pcl::StatisticalOutlierRemoval<pcl::PointXYZ> statistical_outlier; //!< A pcl statistical outlier removal filter object.
     pcl::ShadowPoints<pcl::PointXYZ, pcl::Normal> shadowpoint_filter; //!< A pcl shadowpoints removal filter object.
     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr kdtree_;
-
 
 public Q_SLOTS:
 

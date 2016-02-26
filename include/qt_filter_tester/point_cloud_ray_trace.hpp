@@ -25,21 +25,21 @@
 #include <sstream>
 #include <iomanip>
 
+#include "pcl_filters.hpp"
+
+
+
 /*!
  * A structure containing all information about a ray trace
  */
-struct RayTraceCloud {
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud; /*!< The point cloud of the ray trace */
-    Eigen::Matrix4f pose; /*!< The pose transformation from the camera to the mesh when the ray trace was generated */
-    float enthropy; /*!< The amount of the whole mesh seen in the camera */
-};
 
 //! A manager for the ray trace clouds
 /*!
- * This manager loads up the ray traces of a specific mesh, or generates them from the mesh if they do not exist.
+ * This manager loads up the ray traces and calculated features of a specific mesh, or generates them from the mesh if they do not exist.
  */
 class RayTraceLoader {
+
 public:
     //! Initializes the variables for the loader
     /*!
@@ -115,5 +115,7 @@ private:
     pcl::PolygonMesh mesh; //!< The mesh which is used for generation
     int cloud_resolution; //!< The resolution camera when generating clouds
     int tesselation_level; //!< The tesselation level of the sphere for the camera
+    qt_filter_tester::PclFilters *filters;
+
 };
 #endif //IRONHIDE_VISION_CONTROL_POINT_CLOUD_RAY_TRACE_HPP

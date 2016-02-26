@@ -13,49 +13,38 @@ PclFilters::~PclFilters() {}
 
 
 
-
-int PclFilters::recognizePoints(pcl::PointCloud<pcl::PointXYZ>::Ptr input)
+RayTraceCloud PclFilters::calculate_features(RayTraceCloud inputcloud)
 {
-    ObjectModel inputModel;
+    //Calculate normals, keypoints, local and global descriptor and return the model
 
-    inputModel.points = input;
-    inputModel.normals = get_normals(inputModel.points,0.05);
-
-    inputModel.global_descriptors = calculate_vfh_descriptors(inputModel.points,inputModel.normals);
-    std::vector<int> nn_index(1);
-    std::vector<float> nn_sqr_distance(1);
-    kdtree_->nearestKSearch (inputModel.global_descriptors->points[0],1,nn_index,nn_sqr_distance);
-    int best_match = nn_index[0];
-    std::cout << "nn_sqr_distance: " << nn_sqr_distance[0] << std::endl;
-    return (best_match);
+    inputcloud.normals = get_normals(inputcloud.cloud,0.05);
+    inputcloud.keypoints = calculate_keypoints(inputcloud.cloud,0.01,3,3,0.0);
+    inputcloud.local_descriptors = calculate_local_descritor(inputcloud.cloud,inputcloud.normals,inputcloud.keypoints,0.1);
+    inputcloud.global_descriptors = calculate_vfh_descriptors(inputcloud.cloud,inputcloud.normals);
+    return (inputcloud);
 }
 
-std::vector<ObjectModel> PclFilters::populate_models(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds)
+pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr PclFilters::generate_search_tree(std::vector<RayTraceCloud> models)
 {
-    std::vector<ObjectModel> models;
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors_(new pcl::PointCloud<pcl::VFHSignature308>);
+    //take global descriptors and put them in a kdtree
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptor(new pcl::PointCloud<pcl::VFHSignature308>);
+    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree(new pcl::KdTreeFLANN<pcl::VFHSignature308>);
+    for(int i = 0; i< models.size(); i++){
 
-    for(int i = 0; i< clouds.size(); i++){
-        ObjectModel tmpModel;
-        pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud = clouds.at(i);
-        tmpModel.points = tmpcloud;
-        std::cout << "Cloud nr: " << i << std::endl;
-        std::cout << "Calculating normals" << std::endl;
-        tmpModel.normals = get_normals(tmpModel.points,0.05);
-        //std::cout << "Calculating keypoints" <<  std::endl;
-        //tmpModel.keypoints = calculate_keypoints(tmpModel.points,0.01,10,8,0.0);
-        //std::cout << "Calculating local descriptors" << std::endl;
-        //tmpModel.local_descriptors = calculate_local_descritor(tmpModel.points,tmpModel.normals,tmpModel.keypoints,0.1);
-        std::cout << "Calculating global descriptors" << std::endl;
-        tmpModel.global_descriptors = calculate_vfh_descriptors(tmpModel.points,tmpModel.normals);
-        std::cout << "pushing model to array" << std::endl;
-        models.push_back(tmpModel);
-        *descriptors_ += *(tmpModel.global_descriptors);
+        RayTraceCloud model = models.at(i);
+        *global_descriptor += *(model.global_descriptors);
     }
+    search_tree->setInputCloud(global_descriptor);
+    return (search_tree);
+}
 
-    kdtree_ = pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr (new pcl::KdTreeFLANN<pcl::VFHSignature308>);
-    kdtree_->setInputCloud (descriptors_);
-    return (models);
+int PclFilters::match_cloud(RayTraceCloud object_model,
+                            pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree){
+    std::vector<int> nn_index(1);
+    std::vector<float> nn_sqr_distance(1);
+    search_tree->nearestKSearch (object_model.global_descriptors->points[0],1,nn_index,nn_sqr_distance);
+    int best_match = nn_index[0];
+    return (best_match);
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
@@ -250,7 +239,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr PclFilters::color_cloud(pcl::PointCloud<p
 
 pcl::PointCloud<pcl::Normal>::Ptr PclFilters::get_normals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double radius)
 {
-    pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);  
+    pcl::PointCloud<pcl::Normal>::Ptr normals_out (new pcl::PointCloud<pcl::Normal>);
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
     pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> norm_est;
     norm_est.setNumberOfThreads(8);
@@ -375,23 +364,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::bilateral_filter(pcl::PointCloud
     return (cloud_filtered);
 }
 
-std::vector<RayTracedCloud_descriptors> PclFilters::get_descriptors(std::vector<RayTraceCloud> inclouds)
-{
-    //ray_trace_loader->setCloudResolution(200);
-    std::vector<RayTracedCloud_descriptors> defined_clouds;
-
-    for(int i = 0; i< inclouds.size(); i++){
-        RayTracedCloud_descriptors tmp;
-        RayTraceCloud current = inclouds.at(i);
-        tmp.cloud = current.cloud;
-        tmp.enthropy = current.enthropy;
-        tmp.pose = current.pose;
-        tmp.descriptor = compute_cvfh_descriptors(tmp.cloud);
-        defined_clouds.push_back(tmp);
-    }
-    return (defined_clouds);
-}
-
 pcl::PointCloud<pcl::ESFSignature640>::Ptr PclFilters::calculate_esf_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
 
     pcl::PointCloud<pcl::ESFSignature640>::Ptr descriptor(new pcl::PointCloud<pcl::ESFSignature640>);
@@ -463,6 +435,8 @@ pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::calculate_vfh_descriptors
 
     return (global_descriptor);
 }
+
+
 
 }
 

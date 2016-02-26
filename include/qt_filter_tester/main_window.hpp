@@ -15,9 +15,9 @@
 #include <QMessageBox>
 
 #include "ui_main_window.h"
-#include "pcl_filters.hpp"
 #include "qnode.hpp"
 #include "point_cloud_ray_trace.hpp"
+#include "modelloader.hpp"
 
 #include <vtkRenderWindow.h>
 #include <QVTKWidget.h>
@@ -69,6 +69,7 @@ public:
     void print_filter_values();
     void init_ui_elemets();
     void reset_sliders();
+    void render_raytrace(std::string partName, std::string directory);
 
 public Q_SLOTS:
     //auto connection
@@ -77,6 +78,7 @@ public Q_SLOTS:
     void on_save_cloud_button_clicked(bool check);
     void on_reload_button_clicked(bool check);
     void on_test_button_clicked(bool check);
+    void on_create_database_part_clicked(bool check);
     void on_filter_selection_box_currentIndexChanged(int i);
     void on_filter_slider_1_valueChanged(int i);
     void on_filter_slider_2_valueChanged(int i);
@@ -102,7 +104,6 @@ private:
     QStringListModel *loggingModel;
     QString loggstring;
     PclFilters *filters;
-    RayTraceLoader *ray_trace_loader;
 };
 
 }

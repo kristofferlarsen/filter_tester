@@ -84,6 +84,32 @@ void MainWindow::reset_sliders()
     continously_update_filter_flag = tmp;
 }
 
+void MainWindow::render_raytrace(std::string partName, std::string directory)
+{
+    QString msg = "";
+    msg.append("Rendering file: ");
+    msg.append(directory.data());
+    msg.append(", as partname: ");
+    msg.append(partName.data());
+    print_to_logg(msg);
+    pcl::PolygonMesh mesh;
+    pcl::io::loadPolygonFileSTL(directory,mesh);
+
+    pcl::PointCloud<pcl::PointXYZ> scaled_mesh;
+    Eigen::Matrix4f scaleMatrix = Eigen::Matrix4f::Identity();
+    scaleMatrix(0,0)=0.001f;
+    scaleMatrix(1,1)=0.001f;
+    scaleMatrix(2,2)=0.001f;
+
+    pcl::fromPCLPointCloud2(mesh.cloud,scaled_mesh);
+    pcl::transformPointCloud(scaled_mesh,scaled_mesh,scaleMatrix);
+    pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
+
+    ModelLoader *render = new ModelLoader(mesh, partName);
+    render->setCloudResolution(400);
+    render->populateLoader();
+}
+
 void MainWindow::display_viewer_1(QString url)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr displayCloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -318,19 +344,19 @@ void MainWindow::on_reload_button_clicked(bool check){
 void MainWindow::on_test_button_clicked(bool check)
 {
     //TEST SECTION NSFW
-//    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
-//    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
-//    {
-//        print_to_logg("Could not load file");
-//        return;
-//    }
-//    int index = ui.bla->value();
-//    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-//    clusters = filters->cluster_extraction(tmpcloud,0.01);
-//    ui.bla->setRange(0,clusters.size()-1);
-//    display_viewer_2(filters->visualize(clusters.at(index)));
-//    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
-//    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
+    //    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
+    //    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
+    //    {
+    //        print_to_logg("Could not load file");
+    //        return;
+    //    }
+    //    int index = ui.bla->value();
+    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    //    clusters = filters->cluster_extraction(tmpcloud,0.01);
+    //    ui.bla->setRange(0,clusters.size()-1);
+    //    display_viewer_2(filters->visualize(clusters.at(index)));
+    //    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
+    //    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
 
     //pcl::PolygonMesh mesh;
     //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_from_stl (new pcl::PointCloud<pcl::PointXYZ>());
@@ -338,67 +364,94 @@ void MainWindow::on_test_button_clicked(bool check)
     //pcl::io::loadPolygonFileSTL(fileName.toStdString(),mesh);
     //pcl::fromPCLPointCloud2(mesh.cloud,*cloud_from_stl);
 
-    ray_trace_loader = new RayTraceLoader("THINGY2");
-    ray_trace_loader->setPath(ros::package::getPath("qt_filter_tester") + "/trace_clouds/");
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> temp;
-    temp = filters->cluster_extraction(input_cloud,0.014);
+
+    //    ray_trace_loader = new RayTraceLoader("THINGY2");
+    //    ray_trace_loader->setPath(ros::package::getPath("qt_filter_tester") + "/trace_clouds/");
+
+    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> temp;
+    //    temp = filters->cluster_extraction(input_cloud,0.014);
 
     //display_viewer_2(filters->visualize(temp.at(0)));
 
-    std::vector<RayTraceCloud> clouds;
+    //    std::vector<RayTraceCloud> clouds;
 
     //ray_trace_loader->setCloudResolution(200);
     //std::vector<RayTracedCloud_descriptors> defined_clouds;
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> yes;
+    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> yes;
 
 
     //get the models from the ray traced loader
-    clouds = ray_trace_loader->getPointClouds(true);
-    Eigen::Matrix4f scale_model = Eigen::Matrix4f::Identity();
-    scale_model(0,0) = 0.001;
-    scale_model(1,1) = 0.001;
-    scale_model(2,2) = 0.001;
+    //    clouds = ray_trace_loader->getPointClouds(true);
+    //    Eigen::Matrix4f scale_model = Eigen::Matrix4f::Identity();
+    //    scale_model(0,0) = 0.001;
+    //    scale_model(1,1) = 0.001;
+    //    scale_model(2,2) = 0.001;
 
-    std::cout << "Scaling cad model" << std::endl;
-    for(int i = 0; i< clouds.size(); i++){
-        //std::cout << "Scaling cloud: " << i << std::endl;
-        //ObjectModel model_;
-        //QString filename = "/home/minions/Desktop/scaled/Box_";
-        //filename.append(QString::number(i));
-        //filename.append(".pcd");
-        RayTraceCloud hah = clouds.at(i);
-        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZ>);
-        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp1(new pcl::PointCloud<pcl::PointXYZ>);
-        tmp1 = filters->voxel_grid_filter(hah.cloud,0.001,0.001,0.001);
-        //pcl::transformPointCloud(*tmp1,*tmp,scale_model);
-        //pcl::copyPointCloud(*hah.cloud,*tmp);
-        //model_.points = tmp;
-        //std::cout << "Calculating normals" << std::endl;
-        //model_.normals = filters->get_normals(model_.points,0.05);
-        //std::cout << "Cloud size: " << model_.points->size() << std::endl;
-        //std::cout << "Normals size: " << model_.normals->size() << std::endl;
-        //std::cout << "Calculating keypoints" << std::endl;
-        //model_.keypoints = filters->calculate_keypoints(model_.points, 0.005, 10, 8, 0.0);
-        //std::cout << "Calculating global descriptors" << std::endl;
-        //model_.global_descriptors = filters->compute_ourcvfh_descriptors(model_.points,model_.normals);
-        yes.push_back(tmp1);
+    //    std::cout << "Scaling cad model" << std::endl;
+    //    for(int i = 0; i< clouds.size(); i++){
+    //std::cout << "Scaling cloud: " << i << std::endl;
+    //ObjectModel model_;
+    //QString filename = "/home/minions/Desktop/scaled/Box_";
+    //filename.append(QString::number(i));
+    //filename.append(".pcd");
+    //        RayTraceCloud hah = clouds.at(i);
+    //        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZ>);
+    //        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp1(new pcl::PointCloud<pcl::PointXYZ>);
+    //        tmp1 = filters->voxel_grid_filter(hah.cloud,0.001,0.001,0.001);
+    //pcl::transformPointCloud(*tmp1,*tmp,scale_model);
+    //pcl::copyPointCloud(*hah.cloud,*tmp);
+    //model_.points = tmp;
+    //std::cout << "Calculating normals" << std::endl;
+    //model_.normals = filters->get_normals(model_.points,0.05);
+    //std::cout << "Cloud size: " << model_.points->size() << std::endl;
+    //std::cout << "Normals size: " << model_.normals->size() << std::endl;
+    //std::cout << "Calculating keypoints" << std::endl;
+    //model_.keypoints = filters->calculate_keypoints(model_.points, 0.005, 10, 8, 0.0);
+    //std::cout << "Calculating global descriptors" << std::endl;
+    //model_.global_descriptors = filters->compute_ourcvfh_descriptors(model_.points,model_.normals);
+    //        yes.push_back(tmp1);
+    //    }
+
+    //    pcl::PointCloud<pcl::PointXYZ>::Ptr scaled(new pcl::PointCloud<pcl::PointXYZ>);
+    //    scaled = yes.at(0);
+    //    display_viewer_2(filters->visualize(scaled));
+
+    //    std::cout << "Calculating features" << std::endl;
+    //    std::vector<ObjectModel> models = filters->populate_models(yes);
+    //    pcl::PointCloud<pcl::PointXYZ>::Ptr match;
+    //    std::cout << "Matching descriptors" << std::endl;
+
+    //    int haha = filters->recognizePoints(temp.at(0));
+    //    ObjectModel matchModel = models.at(haha);
+    //    match = matchModel.points;
+    //    display_viewer_2(filters->visualize(match));
+    //    std::cout << "best match: " << haha << std::endl;
+
+
+//    print_to_logg("Trying to load a set of clouds");
+//    ModelLoader *render = new ModelLoader("box");
+//    render->populateLoader();
+//    std::vector<RayTraceCloud> models = render->getModels(false);
+//    std::cout << "size of model array: " << models.size() << std::endl;
+//    RayTraceCloud tmp = models.at(9);
+//    pcl::visualization::PCLPlotter plot;
+//    plot.addFeatureHistogram(*tmp.global_descriptors,308);
+//    plot.plot();
+}
+
+void MainWindow::on_create_database_part_clicked(bool check)
+{
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open STL File"),"/home/minions",tr("STL cad model (*.stl)"));
+    if(!filePath.isEmpty()){
+        bool ok;
+        QString partName = QInputDialog::getText(this, tr("Name the part"), tr("Part name"), QLineEdit::Normal, tr(""), &ok);
+        if(!partName.isEmpty() && ok){
+            std::cout << "Part directory: " << filePath.toStdString() << std::endl;
+            std::cout << "Part name: " << partName.toStdString() << std::endl;
+            render_raytrace(partName.toStdString(),filePath.toStdString());
+        }
     }
-
-    pcl::PointCloud<pcl::PointXYZ>::Ptr scaled(new pcl::PointCloud<pcl::PointXYZ>);
-    scaled = yes.at(0);
-    display_viewer_2(filters->visualize(scaled));
-
-    std::cout << "Calculating features" << std::endl;
-    std::vector<ObjectModel> models = filters->populate_models(yes);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr match;
-    std::cout << "Matching descriptors" << std::endl;
-
-    int haha = filters->recognizePoints(temp.at(0));
-    ObjectModel matchModel = models.at(haha);
-    match = matchModel.points;
-    display_viewer_2(filters->visualize(match));
-    std::cout << "best match: " << haha << std::endl;
 }
 
 void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
@@ -522,6 +575,7 @@ void MainWindow::on_filter_selection_box_currentIndexChanged(int i){
         ui.filter_input_2->setRange(0.001,5);
         ui.filter_input_1->setSingleStep(0.001);
         ui.filter_input_2->setSingleStep(0.001);
+        break;
     default:
         break;
     }

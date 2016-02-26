@@ -4,8 +4,10 @@
 
 #include "../include/qt_filter_tester/point_cloud_ray_trace.hpp"
 
-RayTraceLoader::RayTraceLoader(pcl::PolygonMesh mesh, std::string mesh_name) : RayTraceLoader(mesh_name) {
+
+RayTraceLoader::RayTraceLoader(pcl::PolygonMesh mesh, std::string mesh_name){
     this->mesh = mesh;
+    filters = new qt_filter_tester::PclFilters();
 }
 
 RayTraceLoader::RayTraceLoader(std::string mesh_name) {
@@ -31,7 +33,6 @@ std::vector<RayTraceCloud> RayTraceLoader::getPointClouds(bool load){
     if(load && this->ray_trace_clouds.empty()) {
         this->populateLoader();
     }
-
     return this->ray_trace_clouds;
 }
 
@@ -65,6 +66,10 @@ void RayTraceLoader::generatePointClouds() {
         *cloud.cloud = clouds.at(i);
         cloud.pose = poses.at(i);
         cloud.enthropy = enthropies.at(i);
+        cloud.normals = filters->get_normals(cloud.cloud,0.05);
+        cloud.keypoints = filters->calculate_keypoints(cloud.cloud,0.005,3,3,0.0);
+        cloud.local_descriptors = filters->calculate_local_descritor(cloud.cloud,cloud.normals,cloud.keypoints,0.1);
+        cloud.global_descriptors = filters->calculate_vfh_descriptors(cloud.cloud,cloud.normals);
         this->ray_trace_clouds.push_back(cloud);
     }
 }
@@ -153,3 +158,4 @@ bool RayTraceLoader::loadPointClouds() {
     ROS_INFO("\033[33mSuccessfully loaded %d ray traces\033[0m", i-1);
     return true;
 }
+
