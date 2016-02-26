@@ -1,6 +1,7 @@
 <map id="main.cpp" name="main.cpp">
-<area shape="rect" id="node4" href="$main__window_8hpp.html" title="Qt based gui for QT_test. " alt="" coords="4947,81,5117,122"/>
-<area shape="rect" id="node7" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="2762,179,2864,205"/>
-<area shape="rect" id="node11" href="$point__cloud__ray__trace_8hpp.html" title="point_cloud_ray_trace.hpp" alt="" coords="4549,269,4723,296"/>
-<area shape="rect" id="node40" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="4753,179,4835,205"/>
+<area shape="rect" id="node4" href="$main__window_8hpp.html" title="Qt based gui for QT_test. " alt="" coords="3549,81,3720,122"/>
+<area shape="rect" id="node7" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="811,179,892,205"/>
+<area shape="rect" id="node20" href="$point__cloud__ray__trace_8hpp.html" title="point_cloud_ray_trace.hpp" alt="" coords="1978,179,2152,205"/>
+<area shape="rect" id="node40" href="$modelloader_8hpp.html" title="modelloader.hpp" alt="" coords="2191,179,2307,205"/>
+<area shape="rect" id="node33" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="3133,269,3235,296"/>
 </map>

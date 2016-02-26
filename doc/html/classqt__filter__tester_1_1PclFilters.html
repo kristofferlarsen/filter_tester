@@ -52,6 +52,8 @@ Public Member Functions</h2></td></tr>
 &lt; pcl::ESFSignature640 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#abc391be38d49e7427cddff75165646f8">calculate_esf_descriptors</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud)</td></tr>
 <tr class="memdesc:abc391be38d49e7427cddff75165646f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the esf descriptor for a pcl point cloud.  <a href="#abc391be38d49e7427cddff75165646f8">More...</a><br/></td></tr>
 <tr class="separator:abc391be38d49e7427cddff75165646f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b8783beaf1d09ed5c3d363fed15556a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structRayTraceCloud.html">RayTraceCloud</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a7b8783beaf1d09ed5c3d363fed15556a">calculate_features</a> (<a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> inputcloud)</td></tr>
+<tr class="separator:a7b8783beaf1d09ed5c3d363fed15556a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70b4d515ea3ae1d62952fc5c1f914aa7"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud<br class="typebreak"/>
 &lt; pcl::GFPFHSignature16 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a70b4d515ea3ae1d62952fc5c1f914aa7">calculate_gfpfh_descriptors</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud)</td></tr>
 <tr class="memdesc:a70b4d515ea3ae1d62952fc5c1f914aa7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the gfpfh descriptor for a pcl point cloud.  <a href="#a70b4d515ea3ae1d62952fc5c1f914aa7">More...</a><br/></td></tr>
@@ -85,10 +87,9 @@ Public Member Functions</h2></td></tr>
 &lt; pcl::VFHSignature308 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a94463d126dc1ff1e6a370597f9a54153">compute_cvfh_descriptors</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr object)</td></tr>
 <tr class="memdesc:a94463d126dc1ff1e6a370597f9a54153"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates the CVFH descriptors for an object (cluster)  <a href="#a94463d126dc1ff1e6a370597f9a54153">More...</a><br/></td></tr>
 <tr class="separator:a94463d126dc1ff1e6a370597f9a54153"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28f9063528c793b4d57cafe1983ae693"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
-&lt; <a class="el" href="structqt__filter__tester_1_1RayTracedCloud__descriptors.html">RayTracedCloud_descriptors</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a28f9063528c793b4d57cafe1983ae693">get_descriptors</a> (std::vector&lt; <a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> &gt; inclouds)</td></tr>
-<tr class="memdesc:a28f9063528c793b4d57cafe1983ae693"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the CVFH descriptors for an array of point clouds.  <a href="#a28f9063528c793b4d57cafe1983ae693">More...</a><br/></td></tr>
-<tr class="separator:a28f9063528c793b4d57cafe1983ae693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae56c4b7c5a820711e410c2574c8a6ad5"><td class="memItemLeft" align="right" valign="top">pcl::KdTreeFLANN<br class="typebreak"/>
+&lt; pcl::VFHSignature308 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#ae56c4b7c5a820711e410c2574c8a6ad5">generate_search_tree</a> (std::vector&lt; <a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> &gt; models)</td></tr>
+<tr class="separator:ae56c4b7c5a820711e410c2574c8a6ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f99e2b73d02d10ad8d9e4262ce9e933"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::PointXYZ &gt;<br class="typebreak"/>
 ::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a4f99e2b73d02d10ad8d9e4262ce9e933">get_filtered_cloud</a> ()</td></tr>
 <tr class="memdesc:a4f99e2b73d02d10ad8d9e4262ce9e933"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the most recent point cloud handled by the class.  <a href="#a4f99e2b73d02d10ad8d9e4262ce9e933">More...</a><br/></td></tr>
@@ -96,6 +97,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad84e4413381d10edf610fab7c2171290"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::Normal &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#ad84e4413381d10edf610fab7c2171290">get_normals</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud, double radius)</td></tr>
 <tr class="memdesc:ad84e4413381d10edf610fab7c2171290"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the normals of a Point cloud.  <a href="#ad84e4413381d10edf610fab7c2171290">More...</a><br/></td></tr>
 <tr class="separator:ad84e4413381d10edf610fab7c2171290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54cd857fd21288634e461310f5326cb9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a54cd857fd21288634e461310f5326cb9">match_cloud</a> (<a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> object_model, pcl::KdTreeFLANN&lt; pcl::VFHSignature308 &gt;::Ptr search_tree)</td></tr>
+<tr class="separator:a54cd857fd21288634e461310f5326cb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8586409faa6e97ad43a79ac322b85828"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::PointXYZ &gt;<br class="typebreak"/>
 ::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a8586409faa6e97ad43a79ac322b85828">median_filter</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud, int window_size, double max_allowed_movement)</td></tr>
 <tr class="memdesc:a8586409faa6e97ad43a79ac322b85828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the a point cloud filtered using median filtering.  <a href="#a8586409faa6e97ad43a79ac322b85828">More...</a><br/></td></tr>
@@ -110,10 +113,6 @@ Public Member Functions</h2></td></tr>
 ::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a9b7d40a877ed6348c573f923d1cb1cb5">plane_segmentation</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud, double distance)</td></tr>
 <tr class="memdesc:a9b7d40a877ed6348c573f923d1cb1cb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Segments out a plane for the input point cloud.  <a href="#a9b7d40a877ed6348c573f923d1cb1cb5">More...</a><br/></td></tr>
 <tr class="separator:a9b7d40a877ed6348c573f923d1cb1cb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b234d0ad06858e9854858e158c12cb3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structqt__filter__tester_1_1ObjectModel.html">ObjectModel</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a6b234d0ad06858e9854858e158c12cb3">populate_models</a> (std::vector&lt; pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr &gt; clouds)</td></tr>
-<tr class="separator:a6b234d0ad06858e9854858e158c12cb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af40466e909357071078a5ea45ea1ffe6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#af40466e909357071078a5ea45ea1ffe6">recognizePoints</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr input)</td></tr>
-<tr class="separator:af40466e909357071078a5ea45ea1ffe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a196ddbdf4bbf8ff8c4774383fb735aa0"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::PointXYZ &gt;<br class="typebreak"/>
 ::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqt__filter__tester_1_1PclFilters.html#a196ddbdf4bbf8ff8c4774383fb735aa0">shadowpoint_removal_filter</a> (pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr cloud, double threshold, double radius)</td></tr>
 <tr class="memdesc:a196ddbdf4bbf8ff8c4774383fb735aa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the a point cloud filtered using shadow point removal filtering.  <a href="#a196ddbdf4bbf8ff8c4774383fb735aa0">More...</a><br/></td></tr>
@@ -174,7 +173,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00074">74</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00061">61</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8bbc457e24ff8e72f3595752e15f1d76"></a>
 <div class="memitem">
@@ -253,7 +252,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using a bilateral filter </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00366">366</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00355">355</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -280,7 +279,25 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>ESDSignature640 descriptor for the input point cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00395">395</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00367">367</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7b8783beaf1d09ed5c3d363fed15556a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> qt_filter_tester::PclFilters::calculate_features </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structRayTraceCloud.html">RayTraceCloud</a>&#160;</td>
+          <td class="paramname"><em>inputcloud</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00016">16</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -307,7 +324,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>GFPFH descriptor for the input point cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00431">431</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00403">403</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -353,7 +370,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00061">61</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00050">50</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -393,7 +410,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00087">87</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00076">76</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -430,7 +447,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OurCVFH descriptor for the input point cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00404">404</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00376">376</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -458,7 +475,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00456">456</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00428">428</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -496,7 +513,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pcl visualizer containing the extracted clusters from the input cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00134">134</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00123">123</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -548,7 +565,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A RGB point cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00236">236</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00225">225</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -575,7 +592,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud containing all clouds in the input vector </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00322">322</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00311">311</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -603,34 +620,25 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A CVFH Descriptor </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00333">333</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00322">322</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a28f9063528c793b4d57cafe1983ae693"></a>
+<a class="anchor" id="ae56c4b7c5a820711e410c2574c8a6ad5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="structqt__filter__tester_1_1RayTracedCloud__descriptors.html">RayTracedCloud_descriptors</a> &gt; qt_filter_tester::PclFilters::get_descriptors </td>
+          <td class="memname">pcl::KdTreeFLANN&lt; pcl::VFHSignature308 &gt;::Ptr qt_filter_tester::PclFilters::generate_search_tree </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; <a class="el" href="structRayTraceCloud.html">RayTraceCloud</a> &gt;&#160;</td>
-          <td class="paramname"><em>inclouds</em></td><td>)</td>
+          <td class="paramname"><em>models</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Calculates the CVFH descriptors for an array of point clouds. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">inclouds</td><td>Array of point clouds </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Array of point cloud structs with descriptors </dd></dl>
-
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00378">378</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00027">27</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -650,7 +658,7 @@ Private Attributes</h2></td></tr>
 <p>Returns the most recent point cloud handled by the class. </p>
 <dl class="section return"><dt>Returns</dt><dd>The most recent point cloud handled by the class </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00231">231</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00220">220</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -688,7 +696,35 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The normals of a point cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00251">251</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00240">240</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a54cd857fd21288634e461310f5326cb9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int qt_filter_tester::PclFilters::match_cloud </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structRayTraceCloud.html">RayTraceCloud</a>&#160;</td>
+          <td class="paramname"><em>object_model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">pcl::KdTreeFLANN&lt; pcl::VFHSignature308 &gt;::Ptr&#160;</td>
+          <td class="paramname"><em>search_tree</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00041">41</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -733,7 +769,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using median filtering </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00287">287</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00276">276</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -785,7 +821,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using passthrough filtering </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00265">265</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00254">254</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -823,43 +859,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pcl point cloud containing the points of the segmented plane </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00201">201</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6b234d0ad06858e9854858e158c12cb3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="structqt__filter__tester_1_1ObjectModel.html">ObjectModel</a> &gt; qt_filter_tester::PclFilters::populate_models </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr &gt;&#160;</td>
-          <td class="paramname"><em>clouds</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00033">33</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="af40466e909357071078a5ea45ea1ffe6"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int qt_filter_tester::PclFilters::recognizePoints </td>
-          <td>(</td>
-          <td class="paramtype">pcl::PointCloud&lt; pcl::PointXYZ &gt;::Ptr&#160;</td>
-          <td class="paramname"><em>input</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00017">17</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00190">190</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -904,7 +904,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using shadow point removal filtering </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00298">298</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00287">287</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -949,7 +949,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using statistical outlier removal filtering </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00310">310</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00299">299</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -976,7 +976,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pcl visualizer containing the input cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00106">106</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00095">95</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -1021,7 +1021,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pcl visualizer containing the input cloud and normals as defined by the input parameters </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00123">123</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00112">112</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -1048,7 +1048,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pcl visualizer containing the input cloud </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00114">114</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00103">103</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -1100,7 +1100,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A point cloud filtered using voxel grid filtering </dd></dl>
 
-<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00277">277</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8cpp_source.html#l00266">266</a> of file <a class="el" href="pcl__filters_8cpp_source.html">pcl_filters.cpp</a>.</p>
 
 </div>
 </div>
@@ -1125,7 +1125,7 @@ Private Attributes</h2></td></tr>
 
 <p>The product of a filter operation. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00267">267</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00273">273</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1147,7 +1147,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00273">273</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00279">279</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1171,7 +1171,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl median filter object. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00270">270</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00276">276</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1195,7 +1195,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl passthrough filter object. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00268">268</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00274">274</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1219,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl shadowpoints removal filter object. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00272">272</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00278">278</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1243,7 +1243,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl statistical outlier removal filter object. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00271">271</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00277">277</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1267,7 +1267,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl viewer used to visualize pcl point clouds. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00266">266</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00272">272</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1291,7 +1291,7 @@ Private Attributes</h2></td></tr>
 
 <p>A pcl voxelgrid filter object. </p>
 
-<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00269">269</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00275">275</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -1305,7 +1305,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/qt_filter_tester">qt_filter_tester</a><br />
 Author(s): Kristoffer</br />
-<small>autogenerated on Wed Feb 24 2016 17:17:45</small>
+<small>autogenerated on Fri Feb 26 2016 16:38:02</small>
 </div>
 </body>
 </html>

@@ -30,7 +30,7 @@
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -39,13 +39,23 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a5ac677853de133eeb828aab1be3f5ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6136bc8af9c7347a82e084e3e7d3303c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a6136bc8af9c7347a82e084e3e7d3303c">enthropy</a></td></tr>
 <tr class="separator:a6136bc8af9c7347a82e084e3e7d3303c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51681f549893d080b253ed5d2976bf90"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud<br class="typebreak"/>
+&lt; pcl::VFHSignature308 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a51681f549893d080b253ed5d2976bf90">global_descriptors</a></td></tr>
+<tr class="separator:a51681f549893d080b253ed5d2976bf90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231b9842cbd780833090fdf5da220388"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::PointXYZ &gt;<br class="typebreak"/>
+::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a231b9842cbd780833090fdf5da220388">keypoints</a></td></tr>
+<tr class="separator:a231b9842cbd780833090fdf5da220388"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d0e77ee75564e0b1a8431990f5d34c7"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud<br class="typebreak"/>
+&lt; pcl::FPFHSignature33 &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a3d0e77ee75564e0b1a8431990f5d34c7">local_descriptors</a></td></tr>
+<tr class="separator:a3d0e77ee75564e0b1a8431990f5d34c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05fc0184d49f74e66c8c435276095b39"><td class="memItemLeft" align="right" valign="top">pcl::PointCloud&lt; pcl::Normal &gt;::Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a05fc0184d49f74e66c8c435276095b39">normals</a></td></tr>
+<tr class="separator:a05fc0184d49f74e66c8c435276095b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a477c4e12fd04c7f268cc7f43aebacfde"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix4f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structRayTraceCloud.html#a477c4e12fd04c7f268cc7f43aebacfde">pose</a></td></tr>
 <tr class="separator:a477c4e12fd04c7f268cc7f43aebacfde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A structure containing all information about a ray trace </p>
-
-<p>Definition at line <a class="el" href="point__cloud__ray__trace_8hpp_source.html#l00031">31</a> of file <a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a>.</p>
+<div class="textblock">
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00047">47</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="a5ac677853de133eeb828aab1be3f5ed4"></a>
 <div class="memitem">
@@ -58,7 +68,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The point cloud of the ray trace </p>
 
-<p>Definition at line <a class="el" href="point__cloud__ray__trace_8hpp_source.html#l00033">33</a> of file <a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00048">48</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -73,7 +83,66 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The amount of the whole mesh seen in the camera </p>
 
-<p>Definition at line <a class="el" href="point__cloud__ray__trace_8hpp_source.html#l00035">35</a> of file <a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00050">50</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a51681f549893d080b253ed5d2976bf90"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pcl::PointCloud&lt;pcl::VFHSignature308&gt;::Ptr RayTraceCloud::global_descriptors</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The clouds local descriptors </p>
+
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00054">54</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a231b9842cbd780833090fdf5da220388"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pcl::PointCloud&lt;pcl::PointXYZ&gt;::Ptr RayTraceCloud::keypoints</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00051">51</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3d0e77ee75564e0b1a8431990f5d34c7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pcl::PointCloud&lt;pcl::FPFHSignature33&gt;::Ptr RayTraceCloud::local_descriptors</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The clouds surface normal </p>
+
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00053">53</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a05fc0184d49f74e66c8c435276095b39"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">pcl::PointCloud&lt;pcl::Normal&gt;::Ptr RayTraceCloud::normals</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The clouds keypoints </p>
+
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00052">52</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
@@ -88,12 +157,12 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The pose transformation from the camera to the mesh when the ray trace was generated </p>
 
-<p>Definition at line <a class="el" href="point__cloud__ray__trace_8hpp_source.html#l00034">34</a> of file <a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a>.</p>
+<p>Definition at line <a class="el" href="pcl__filters_8hpp_source.html#l00049">49</a> of file <a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="point__cloud__ray__trace_8hpp_source.html">point_cloud_ray_trace.hpp</a></li>
+<li><a class="el" href="pcl__filters_8hpp_source.html">pcl_filters.hpp</a></li>
 </ul>
 </div><!-- contents -->
 
@@ -101,7 +170,7 @@ Public Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/qt_filter_tester">qt_filter_tester</a><br />
 Author(s): Kristoffer</br />
-<small>autogenerated on Wed Feb 24 2016 17:17:45</small>
+<small>autogenerated on Fri Feb 26 2016 16:38:02</small>
 </div>
 </body>
 </html>
