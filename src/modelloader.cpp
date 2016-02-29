@@ -78,15 +78,17 @@ void ModelLoader::generatePointClouds() {
         *cloud.cloud = clouds.at(i);
         cloud.pose = poses.at(i);
         cloud.enthropy = enthropies.at(i);
-        std::cout << "Cloud nr. " << i << std::endl;
-        std::cout << "Calculating Normals" << std::endl;
-        cloud.normals = filters->get_normals(cloud.cloud,0.05);
-        std::cout << "Calculating Keypoints" << std::endl;
-        cloud.keypoints = filters->calculate_keypoints(cloud.cloud,0.005,3,3,0.0);
-        std::cout << "Calculating Local descriptors" << std::endl;
-        cloud.local_descriptors = filters->calculate_local_descritor(cloud.cloud,cloud.normals,cloud.keypoints,0.1);
-        std::cout << "Calculating Global Descriptors" << std::endl;
-        cloud.global_descriptors = filters->calculate_vfh_descriptors(cloud.cloud,cloud.normals);
+
+        std::cout << "Calculating features for Cloud nr. " << i << std::endl;
+
+        cloud = filters->calculate_features(cloud);
+
+
+        //cloud.normals = filters->get_normals(cloud.cloud,0.05);
+        //cloud.keypoints = filters->calculate_keypoints(cloud.cloud,0.001,3,3,0.0);
+        std::cout << "nr of keypoints: " << cloud.keypoints->size() << std::endl;
+        //cloud.local_descriptors = filters->calculate_local_descritor(cloud.cloud,cloud.normals,cloud.keypoints,0.15);
+        //cloud.global_descriptors = filters->calculate_vfh_descriptors(cloud.cloud,cloud.normals);
 
         this->ray_trace_clouds.push_back(cloud);
     }

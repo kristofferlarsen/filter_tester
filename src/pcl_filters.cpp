@@ -11,6 +11,45 @@ PclFilters::PclFilters(QObject *parent):
 
 PclFilters::~PclFilters() {}
 
+Eigen::Matrix4f PclFilters::calculateInitialAlignment(RayTraceCloud source, RayTraceCloud target, float min_sample_distance, float max_correspondence_distance, int nr_iterations)
+{
+    pcl::SampleConsensusInitialAlignment<pcl::PointXYZ,pcl::PointXYZ,pcl::FPFHSignature33> sac_ia;
+    sac_ia.setMinSampleDistance(min_sample_distance);
+    sac_ia.setMaxCorrespondenceDistance(max_correspondence_distance);
+    sac_ia.setMaximumIterations(nr_iterations);
+
+    sac_ia.setInputSource(source.keypoints);
+    sac_ia.setSourceFeatures(source.local_descriptors);
+
+    sac_ia.setInputTarget(target.keypoints);
+    sac_ia.setTargetFeatures(target.local_descriptors);
+
+    pcl::PointCloud<pcl::PointXYZ> registration_output;
+    sac_ia.align(registration_output);
+
+    return (sac_ia.getFinalTransformation());
+}
+
+Eigen::Matrix4f PclFilters::calculateRefinedAlignment(RayTraceCloud source, RayTraceCloud target, Eigen::Matrix4f initial_alignment, float max_correspondence_distance, float outlier_rejection_threshold, float transformation_epsilon, float eucledian_fitness_epsilon, int max_iterations)
+{
+   pcl::IterativeClosestPoint<pcl::PointXYZ,pcl::PointXYZ> icp;
+   icp.setMaxCorrespondenceDistance(max_correspondence_distance);
+   icp.setRANSACOutlierRejectionThreshold(outlier_rejection_threshold);
+   icp.setTransformationEpsilon(transformation_epsilon);
+   icp.setEuclideanFitnessEpsilon(eucledian_fitness_epsilon);
+   icp.setMaximumIterations(max_iterations);
+
+   pcl::PointCloud<pcl::PointXYZ>::Ptr source_transformed (new pcl::PointCloud<pcl::PointXYZ>);
+   pcl::transformPointCloud(*source.cloud,*source_transformed,initial_alignment);
+
+   icp.setInputSource(source_transformed);
+   icp.setInputTarget(target.cloud);
+
+   pcl::PointCloud<pcl::PointXYZ> registration_output;
+   icp.align(registration_output);
+   return (icp.getFinalTransformation() * initial_alignment);
+}
+
 
 
 RayTraceCloud PclFilters::calculate_features(RayTraceCloud inputcloud)
@@ -18,8 +57,8 @@ RayTraceCloud PclFilters::calculate_features(RayTraceCloud inputcloud)
     //Calculate normals, keypoints, local and global descriptor and return the model
 
     inputcloud.normals = get_normals(inputcloud.cloud,0.05);
-    inputcloud.keypoints = calculate_keypoints(inputcloud.cloud,0.01,3,3,0.0);
-    inputcloud.local_descriptors = calculate_local_descritor(inputcloud.cloud,inputcloud.normals,inputcloud.keypoints,0.1);
+    inputcloud.keypoints = calculate_keypoints(inputcloud.cloud,0.001,3,3,0.0);
+    inputcloud.local_descriptors = calculate_local_descritor(inputcloud.cloud,inputcloud.normals,inputcloud.keypoints,0.15);
     inputcloud.global_descriptors = calculate_vfh_descriptors(inputcloud.cloud,inputcloud.normals);
     return (inputcloud);
 }
@@ -170,7 +209,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(
 
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance (0.02); // 2cm
+    ec.setClusterTolerance (0.01); // 2cm
     ec.setMinClusterSize (500);
     ec.setMaxClusterSize (25000);
     ec.setSearchMethod (tree);

@@ -34,6 +34,7 @@
 
 #include "pcl/keypoints/sift_keypoint.h"
 
+#include <pcl/registration/ia_ransac.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 
@@ -41,6 +42,7 @@
 
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/registration/icp.h>
 
 
 
@@ -65,6 +67,21 @@ public:
 
     PclFilters(QObject *parent = 0);
     ~PclFilters();
+
+    Eigen::Matrix4f calculateInitialAlignment(RayTraceCloud source,
+                                              RayTraceCloud target,
+                                              float min_sample_distance,
+                                              float max_correspondence_distance,
+                                              int nr_iterations);
+
+    Eigen::Matrix4f calculateRefinedAlignment (RayTraceCloud source,
+                                               RayTraceCloud target,
+                                               Eigen::Matrix4f initial_alignment,
+                                               float max_correspondence_distance,
+                                               float outlier_rejection_threshold,
+                                               float transformation_epsilon,
+                                               float eucledian_fitness_epsilon,
+                                               int max_iterations);
 
 
     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr generate_search_tree(std::vector<RayTraceCloud> models);

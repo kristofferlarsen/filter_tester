@@ -106,7 +106,8 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
-    render->setCloudResolution(400);
+    render->setCloudResolution(100);
+    render->setTesselation_level(3);
     render->populateLoader();
 }
 
@@ -430,14 +431,58 @@ void MainWindow::on_test_button_clicked(bool check)
 
 
 //    print_to_logg("Trying to load a set of clouds");
-//    ModelLoader *render = new ModelLoader("box");
-//    render->populateLoader();
-//    std::vector<RayTraceCloud> models = render->getModels(false);
-//    std::cout << "size of model array: " << models.size() << std::endl;
-//    RayTraceCloud tmp = models.at(9);
-//    pcl::visualization::PCLPlotter plot;
-//    plot.addFeatureHistogram(*tmp.global_descriptors,308);
-//    plot.plot();
+    ModelLoader *render = new ModelLoader("cone2");
+    render->populateLoader();
+    std::vector<RayTraceCloud> models = render->getModels(false);
+    std::cout << "size of model array: " << models.size() << std::endl;
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
+    //display_viewer_2(filters->visualize(clusters.at(0)));
+    RayTraceCloud cluster_cloud;
+    cluster_cloud.cloud = clusters.at(1);
+    cluster_cloud = filters->calculate_features(cluster_cloud);
+
+    //display_viewer_2(filters->visualize(cluster_cloud.cloud));
+
+    int a = filters->match_cloud(cluster_cloud,filters->generate_search_tree(models));
+    std::cout << "found best match: " << a << std::endl;
+
+    Eigen::Matrix4f initial = filters->calculateInitialAlignment(models.at(a),cluster_cloud,0.05,1,1000);
+    std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+
+    Eigen::Matrix4f final = filters->calculateRefinedAlignment(models.at(a),cluster_cloud,initial,0.1,0.1,1e-10,0.00001,1000);
+
+    std::cout << "Final alignment: " << std::endl << final << std::endl;
+
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = filters->color_cloud(input_cloud,255,255,255);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr initial_part = filters->color_cloud(models.at(a).cloud,255,0,0);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr final_part = filters->color_cloud(models.at(a).cloud,255,0,0);
+
+    pcl::transformPointCloud(*initial_part,*initial_part,initial);
+    pcl::visualization::PCLVisualizer vis;
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white (cloud, 255, 255, 255);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (initial_part, 255, 0, 0);
+    vis.addPointCloud(cloud, white, "source");
+    //translate the model
+    vis.addPointCloud(initial_part, red, "target");
+    vis.spin();
+    pcl::transformPointCloud(*final_part,*final_part,final);
+    pcl::visualization::PCLVisualizer vis1;
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white1 (cloud, 255, 255, 255);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red1 (final_part, 255, 0, 0);
+    vis1.addPointCloud(cloud, white1, "source");
+    //translate the model
+    vis1.addPointCloud(final_part, red1, "target");
+    vis1.spin();
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_rgb = filters->color_cloud(cluster_cloud.cloud,255,255,255);
+
+    pcl::visualization::PCLVisualizer vis2;
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white3 (cluster_rgb, 255, 255, 255);
+    vis2.addPointCloud(cluster_rgb, white3, "source");
+    //translate the model
+    vis2.addPointCloud(final_part, red1, "target");
+    vis2.spin();
+    display_viewer_2(filters->visualize(cluster_cloud.cloud));
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)
