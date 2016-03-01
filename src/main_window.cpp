@@ -106,8 +106,8 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
-    render->setCloudResolution(100);
-    render->setTesselation_level(3);
+    render->setCloudResolution(200);
+    render->setTesselation_level(2);
     render->populateLoader();
 }
 
@@ -431,7 +431,7 @@ void MainWindow::on_test_button_clicked(bool check)
 
 
 //    print_to_logg("Trying to load a set of clouds");
-    ModelLoader *render = new ModelLoader("cone2");
+    ModelLoader *render = new ModelLoader("cone");
     render->populateLoader();
     std::vector<RayTraceCloud> models = render->getModels(false);
     std::cout << "size of model array: " << models.size() << std::endl;
@@ -483,6 +483,7 @@ void MainWindow::on_test_button_clicked(bool check)
     vis2.addPointCloud(final_part, red1, "target");
     vis2.spin();
     display_viewer_2(filters->visualize(cluster_cloud.cloud));
+    std::cout << models.at(a).pose << std::endl;
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)
