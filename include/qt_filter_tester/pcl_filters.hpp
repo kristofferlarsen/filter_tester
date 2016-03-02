@@ -68,6 +68,9 @@ public:
     PclFilters(QObject *parent = 0);
     ~PclFilters();
 
+    int search_for_model(std::vector<RayTraceCloud> clusters,
+                         std::vector<RayTraceCloud> model);
+
     Eigen::Matrix4f calculateInitialAlignment(RayTraceCloud source,
                                               RayTraceCloud target,
                                               float min_sample_distance,
@@ -86,7 +89,7 @@ public:
 
     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr generate_search_tree(std::vector<RayTraceCloud> models);
 
-    int match_cloud(RayTraceCloud object_model,
+    std::vector<float> match_cloud(RayTraceCloud object_model,
                     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,

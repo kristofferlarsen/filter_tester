@@ -104,6 +104,9 @@ private:
     QStringListModel *loggingModel;
     QString loggstring;
     PclFilters *filters;
+    ModelLoader *freakthing;
+    ModelLoader *box;
+    ModelLoader *cone;
 };
 
 }

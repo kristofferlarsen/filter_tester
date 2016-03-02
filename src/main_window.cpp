@@ -29,6 +29,13 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filters = new PclFilters();
     filter_changed_flag = true;
     init_ui_elemets();
+
+    freakthing = new ModelLoader("freakthing-42-100");
+    freakthing->populateLoader();
+    box = new ModelLoader("box-42-100");
+    box->populateLoader();
+    cone = new ModelLoader("cone-42-100");
+    cone->populateLoader();
 }
 
 MainWindow::~MainWindow() {}
@@ -106,8 +113,8 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
-    render->setCloudResolution(200);
-    render->setTesselation_level(2);
+    render->setCloudResolution(100);
+    render->setTesselation_level(1);
     render->populateLoader();
 }
 
@@ -344,146 +351,72 @@ void MainWindow::on_reload_button_clicked(bool check){
 
 void MainWindow::on_test_button_clicked(bool check)
 {
-    //TEST SECTION NSFW
-    //    pcl::PointCloud<pcl::PointXYZ>::Ptr tmpcloud(new pcl::PointCloud<pcl::PointXYZ>);
-    //    if(pcl::io::loadPCDFile<pcl::PointXYZ>("/home/minions/tabletop.pcd", *tmpcloud) == -1)
-    //    {
-    //        print_to_logg("Could not load file");
-    //        return;
-    //    }
-    //    int index = ui.bla->value();
-    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-    //    clusters = filters->cluster_extraction(tmpcloud,0.01);
-    //    ui.bla->setRange(0,clusters.size()-1);
-    //    display_viewer_2(filters->visualize(clusters.at(index)));
-    //    pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors;
-    //    descriptors = filters->compute_cvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.01));
-
-    //pcl::PolygonMesh mesh;
-    //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_from_stl (new pcl::PointCloud<pcl::PointXYZ>());
-    //std::cout << fileName.toStdString() << std::endl;
-    //pcl::io::loadPolygonFileSTL(fileName.toStdString(),mesh);
-    //pcl::fromPCLPointCloud2(mesh.cloud,*cloud_from_stl);
-
-
-
-    //    ray_trace_loader = new RayTraceLoader("THINGY2");
-    //    ray_trace_loader->setPath(ros::package::getPath("qt_filter_tester") + "/trace_clouds/");
-
-    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> temp;
-    //    temp = filters->cluster_extraction(input_cloud,0.014);
-
-    //display_viewer_2(filters->visualize(temp.at(0)));
-
-    //    std::vector<RayTraceCloud> clouds;
-
-    //ray_trace_loader->setCloudResolution(200);
-    //std::vector<RayTracedCloud_descriptors> defined_clouds;
-    //    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> yes;
-
-
-    //get the models from the ray traced loader
-    //    clouds = ray_trace_loader->getPointClouds(true);
-    //    Eigen::Matrix4f scale_model = Eigen::Matrix4f::Identity();
-    //    scale_model(0,0) = 0.001;
-    //    scale_model(1,1) = 0.001;
-    //    scale_model(2,2) = 0.001;
-
-    //    std::cout << "Scaling cad model" << std::endl;
-    //    for(int i = 0; i< clouds.size(); i++){
-    //std::cout << "Scaling cloud: " << i << std::endl;
-    //ObjectModel model_;
-    //QString filename = "/home/minions/Desktop/scaled/Box_";
-    //filename.append(QString::number(i));
-    //filename.append(".pcd");
-    //        RayTraceCloud hah = clouds.at(i);
-    //        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp(new pcl::PointCloud<pcl::PointXYZ>);
-    //        pcl::PointCloud<pcl::PointXYZ>::Ptr tmp1(new pcl::PointCloud<pcl::PointXYZ>);
-    //        tmp1 = filters->voxel_grid_filter(hah.cloud,0.001,0.001,0.001);
-    //pcl::transformPointCloud(*tmp1,*tmp,scale_model);
-    //pcl::copyPointCloud(*hah.cloud,*tmp);
-    //model_.points = tmp;
-    //std::cout << "Calculating normals" << std::endl;
-    //model_.normals = filters->get_normals(model_.points,0.05);
-    //std::cout << "Cloud size: " << model_.points->size() << std::endl;
-    //std::cout << "Normals size: " << model_.normals->size() << std::endl;
-    //std::cout << "Calculating keypoints" << std::endl;
-    //model_.keypoints = filters->calculate_keypoints(model_.points, 0.005, 10, 8, 0.0);
-    //std::cout << "Calculating global descriptors" << std::endl;
-    //model_.global_descriptors = filters->compute_ourcvfh_descriptors(model_.points,model_.normals);
-    //        yes.push_back(tmp1);
-    //    }
-
-    //    pcl::PointCloud<pcl::PointXYZ>::Ptr scaled(new pcl::PointCloud<pcl::PointXYZ>);
-    //    scaled = yes.at(0);
-    //    display_viewer_2(filters->visualize(scaled));
-
-    //    std::cout << "Calculating features" << std::endl;
-    //    std::vector<ObjectModel> models = filters->populate_models(yes);
-    //    pcl::PointCloud<pcl::PointXYZ>::Ptr match;
-    //    std::cout << "Matching descriptors" << std::endl;
-
-    //    int haha = filters->recognizePoints(temp.at(0));
-    //    ObjectModel matchModel = models.at(haha);
-    //    match = matchModel.points;
-    //    display_viewer_2(filters->visualize(match));
-    //    std::cout << "best match: " << haha << std::endl;
-
-
-//    print_to_logg("Trying to load a set of clouds");
-    ModelLoader *render = new ModelLoader("cone");
-    render->populateLoader();
-    std::vector<RayTraceCloud> models = render->getModels(false);
-    std::cout << "size of model array: " << models.size() << std::endl;
-
+    std::vector<RayTraceCloud> freakthing_model = freakthing->getModels(false);
+    std::vector<RayTraceCloud> box_model = box->getModels(false);
+    std::vector<RayTraceCloud> cone_model = cone->getModels(false);
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
     //display_viewer_2(filters->visualize(clusters.at(0)));
-    RayTraceCloud cluster_cloud;
-    cluster_cloud.cloud = clusters.at(1);
-    cluster_cloud = filters->calculate_features(cluster_cloud);
 
     //display_viewer_2(filters->visualize(cluster_cloud.cloud));
 
-    int a = filters->match_cloud(cluster_cloud,filters->generate_search_tree(models));
-    std::cout << "found best match: " << a << std::endl;
+    std::vector<RayTraceCloud> cluster_models;
+    for(int i = 0; i < clusters.size(); i++){
+        RayTraceCloud cluster_cloud;
+        cluster_cloud.cloud = clusters.at(i);
+        cluster_cloud = filters->calculate_features(cluster_cloud);
+        cluster_models.push_back(cluster_cloud);
+    }
 
-    Eigen::Matrix4f initial = filters->calculateInitialAlignment(models.at(a),cluster_cloud,0.05,1,1000);
-    std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+    ui.bla->setRange(0,cluster_models.size()-1);
+    display_viewer_2(filters->visualize(cluster_models.at(ui.bla->value()).cloud));
 
-    Eigen::Matrix4f final = filters->calculateRefinedAlignment(models.at(a),cluster_cloud,initial,0.1,0.1,1e-10,0.00001,1000);
+    int freakthing_cluster = filters->search_for_model(cluster_models,freakthing_model);
+    std::cout << "For freak thing, best match is cluster " << freakthing_cluster << std::endl;
+    int box_cluster = filters->search_for_model(cluster_models,box_model);
+    std::cout << "For box thing, best match is cluster " << box_cluster << std::endl;
+    int cone_cluster = filters->search_for_model(cluster_models,cone_model);
+    std::cout << "For cone thing, best match is cluster " << cone_cluster << std::endl;
+    //display_viewer_2(filters->visualize(cluster_models.at(freakthing_cluster).cloud));
 
-    std::cout << "Final alignment: " << std::endl << final << std::endl;
+    //int a = filters->match_cloud(cluster_cloud,filters->generate_search_tree(models));
+    //std::cout << "found best match: " << a << std::endl;
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = filters->color_cloud(input_cloud,255,255,255);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr initial_part = filters->color_cloud(models.at(a).cloud,255,0,0);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr final_part = filters->color_cloud(models.at(a).cloud,255,0,0);
+//    Eigen::Matrix4f initial = filters->calculateInitialAlignment(models.at(a),cluster_cloud,0.05,1,1000);
+//    std::cout << "Initial alignment: " << std::endl << initial << std::endl;
 
-    pcl::transformPointCloud(*initial_part,*initial_part,initial);
-    pcl::visualization::PCLVisualizer vis;
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white (cloud, 255, 255, 255);
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (initial_part, 255, 0, 0);
-    vis.addPointCloud(cloud, white, "source");
-    //translate the model
-    vis.addPointCloud(initial_part, red, "target");
-    vis.spin();
-    pcl::transformPointCloud(*final_part,*final_part,final);
-    pcl::visualization::PCLVisualizer vis1;
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white1 (cloud, 255, 255, 255);
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red1 (final_part, 255, 0, 0);
-    vis1.addPointCloud(cloud, white1, "source");
-    //translate the model
-    vis1.addPointCloud(final_part, red1, "target");
-    vis1.spin();
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_rgb = filters->color_cloud(cluster_cloud.cloud,255,255,255);
+//    Eigen::Matrix4f final = filters->calculateRefinedAlignment(models.at(a),cluster_cloud,initial,0.1,0.1,1e-10,0.00001,1000);
 
-    pcl::visualization::PCLVisualizer vis2;
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white3 (cluster_rgb, 255, 255, 255);
-    vis2.addPointCloud(cluster_rgb, white3, "source");
-    //translate the model
-    vis2.addPointCloud(final_part, red1, "target");
-    vis2.spin();
-    display_viewer_2(filters->visualize(cluster_cloud.cloud));
-    std::cout << models.at(a).pose << std::endl;
+//    std::cout << "Final alignment: " << std::endl << final << std::endl;
+
+//    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = filters->color_cloud(input_cloud,255,255,255);
+//    pcl::PointCloud<pcl::PointXYZRGB>::Ptr initial_part = filters->color_cloud(models.at(a).cloud,255,0,0);
+//    pcl::PointCloud<pcl::PointXYZRGB>::Ptr final_part = filters->color_cloud(models.at(a).cloud,255,0,0);
+
+//    pcl::transformPointCloud(*initial_part,*initial_part,initial);
+//    pcl::visualization::PCLVisualizer vis;
+//    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white (cloud, 255, 255, 255);
+//    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red (initial_part, 255, 0, 0);
+//    vis.addPointCloud(cloud, white, "source");
+
+//    vis.addPointCloud(initial_part, red, "target");
+//    vis.spin();
+//    pcl::transformPointCloud(*final_part,*final_part,final);
+//    pcl::visualization::PCLVisualizer vis1;
+//    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white1 (cloud, 255, 255, 255);
+//    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> red1 (final_part, 255, 0, 0);
+//    vis1.addPointCloud(cloud, white1, "source");
+
+//    vis1.addPointCloud(final_part, red1, "target");
+//    vis1.spin();
+//    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cluster_rgb = filters->color_cloud(cluster_cloud.cloud,255,255,255);
+
+//    pcl::visualization::PCLVisualizer vis2;
+//    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> white3 (cluster_rgb, 255, 255, 255);
+//    vis2.addPointCloud(cluster_rgb, white3, "source");
+
+//    vis2.addPointCloud(final_part, red1, "target");
+//    vis2.spin();
+//    std::cout << models.at(a).pose << std::endl;
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)
