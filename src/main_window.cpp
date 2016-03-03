@@ -32,8 +32,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 
     freakthing = new ModelLoader("freakthing-42-100");
     freakthing->populateLoader();
-    box = new ModelLoader("box-42-100");
-    box->populateLoader();
+    //box = new ModelLoader("box-42-100");
+    //box->populateLoader();
     cone = new ModelLoader("cone-42-100");
     cone->populateLoader();
 }
@@ -257,7 +257,6 @@ void MainWindow::on_run_action_button_clicked(bool check){
             output_cloud = filters->get_filtered_cloud();
             w2->update();
         }
-
         break;
     case 1:
         //voxelGrid
@@ -352,7 +351,7 @@ void MainWindow::on_reload_button_clicked(bool check){
 void MainWindow::on_test_button_clicked(bool check)
 {
     std::vector<RayTraceCloud> freakthing_model = freakthing->getModels(false);
-    std::vector<RayTraceCloud> box_model = box->getModels(false);
+    //std::vector<RayTraceCloud> box_model = box->getModels(false);
     std::vector<RayTraceCloud> cone_model = cone->getModels(false);
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
     //display_viewer_2(filters->visualize(clusters.at(0)));
@@ -367,26 +366,34 @@ void MainWindow::on_test_button_clicked(bool check)
         cluster_models.push_back(cluster_cloud);
     }
 
-    ui.bla->setRange(0,cluster_models.size()-1);
-    display_viewer_2(filters->visualize(cluster_models.at(ui.bla->value()).cloud));
+    //ui.bla->setRange(0,cluster_models.size()-1);
+    //display_viewer_2(filters->visualize(cluster_models.at(ui.bla->value()).cloud));
+    std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
 
-    int freakthing_cluster = filters->search_for_model(cluster_models,freakthing_model);
-    std::cout << "For freak thing, best match is cluster " << freakthing_cluster << std::endl;
-    int box_cluster = filters->search_for_model(cluster_models,box_model);
-    std::cout << "For box thing, best match is cluster " << box_cluster << std::endl;
+    //int freakthing_cluster = filters->search_for_model(cluster_models,freakthing_model);
+    //std::cout << "For freak thing, best match is cluster " << freakthing_cluster << std::endl;
+    //int box_cluster = filters->search_for_model(cluster_models,box_model);
+    //std::cout << "For box thing, best match is cluster " << box_cluster << std::endl;
     int cone_cluster = filters->search_for_model(cluster_models,cone_model);
     std::cout << "For cone thing, best match is cluster " << cone_cluster << std::endl;
     //display_viewer_2(filters->visualize(cluster_models.at(freakthing_cluster).cloud));
 
+    std::vector<float> search_results_cone = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(cone_model));
+    std::vector<float> search_results_freak = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(freakthing_model));
+
+    std::cout << "Result:" << std::endl;
+    std::cout << "Confidence level cone: " << search_results_cone[1] << ", selected model: " << search_results_cone[0] << std::endl;
+    std::cout << "Confidence level freakthing: " << search_results_freak[1] << ", selected model: " << search_results_freak[0] << std::endl;
+
     //int a = filters->match_cloud(cluster_cloud,filters->generate_search_tree(models));
     //std::cout << "found best match: " << a << std::endl;
 
-//    Eigen::Matrix4f initial = filters->calculateInitialAlignment(models.at(a),cluster_cloud,0.05,1,1000);
-//    std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+    //Eigen::Matrix4f initial = filters->calculateInitialAlignment(models.at(a),cluster_cloud,0.05,1,1000);
+    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
 
-//    Eigen::Matrix4f final = filters->calculateRefinedAlignment(models.at(a),cluster_cloud,initial,0.1,0.1,1e-10,0.00001,1000);
+    //Eigen::Matrix4f final = filters->calculateRefinedAlignment(models.at(a),cluster_cloud,initial,0.1,0.1,1e-10,0.00001,1000);
 
-//    std::cout << "Final alignment: " << std::endl << final << std::endl;
+    //std::cout << "Final alignment: " << std::endl << final << std::endl;
 
 //    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = filters->color_cloud(input_cloud,255,255,255);
 //    pcl::PointCloud<pcl::PointXYZRGB>::Ptr initial_part = filters->color_cloud(models.at(a).cloud,255,0,0);

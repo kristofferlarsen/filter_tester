@@ -54,12 +54,15 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 	remappings["__master"] = master_url;
 	remappings["__hostname"] = host_url;
 	ros::init(remappings,"qt_filter_tester");
+
+
+
 	if ( ! ros::master::check() ) {
 		return false;
 	}
 	ros::start(); // explicitly needed since our nodehandle is going out of scope.
 	ros::NodeHandle n;
-	// Add your ros communications here.
+    // Add your ros communications here.
 	start();
 	return true;
 }
