@@ -374,8 +374,8 @@ void MainWindow::on_test_button_clicked(bool check)
     //std::cout << "For freak thing, best match is cluster " << freakthing_cluster << std::endl;
     //int box_cluster = filters->search_for_model(cluster_models,box_model);
     //std::cout << "For box thing, best match is cluster " << box_cluster << std::endl;
-    int cone_cluster = filters->search_for_model(cluster_models,cone_model);
-    std::cout << "For cone thing, best match is cluster " << cone_cluster << std::endl;
+    int cone_cluster = filters->search_for_model(cluster_models,freakthing_model);
+    std::cout << "For freak thing, best match is cluster " << cone_cluster << std::endl;
     //display_viewer_2(filters->visualize(cluster_models.at(freakthing_cluster).cloud));
 
     std::vector<float> search_results_cone = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(cone_model));
