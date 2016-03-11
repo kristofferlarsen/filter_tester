@@ -391,26 +391,19 @@ pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(
     // CVFH estimation object.
 
     pcl::CVFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::VFHSignature308> cvfh;
-
     cvfh.setInputCloud(cloud);
-
     cvfh.setInputNormals(normals);
-
     cvfh.setSearchMethod(kdtree);
-
     // Set the maximum allowable deviation of the normals,
     // for the region segmentation step.
     cvfh.setEPSAngleThreshold(5.0 / 180.0 * M_PI); // 5 degrees.
-
     // Set the curvature threshold (maximum disparity between curvatures),
     // for the region segmentation step.
     cvfh.setCurvatureThreshold(1.0);
-
     // Set to true to normalize the bins of the resulting histogram,
     // using the total number of points. Note: enabling it will make CVFH
     // invariant to scale just like VFH, but the authors encourage the opposite.
     cvfh.setNormalizeBins(false);
-
     cvfh.compute(*descriptors);
 
     return (descriptors);

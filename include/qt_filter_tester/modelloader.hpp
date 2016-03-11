@@ -37,7 +37,6 @@ class ModelLoader : public QObject
 public:
 
 
-
     ModelLoader(pcl::PolygonMesh mesh, std::string mesh_name);
 
     ModelLoader(std::string mesh_name);

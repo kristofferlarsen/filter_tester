@@ -16,7 +16,6 @@
 
 #include "ui_main_window.h"
 #include "qnode.hpp"
-#include "point_cloud_ray_trace.hpp"
 #include "modelloader.hpp"
 
 #include <vtkRenderWindow.h>

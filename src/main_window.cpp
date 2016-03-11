@@ -350,11 +350,22 @@ void MainWindow::on_reload_button_clicked(bool check){
 
 void MainWindow::on_test_button_clicked(bool check)
 {
-    std::vector<RayTraceCloud> freakthing_model = freakthing->getModels(false);
+    //std::vector<RayTraceCloud> freakthing_model = freakthing->getModels(false);
     //std::vector<RayTraceCloud> box_model = box->getModels(false);
-    std::vector<RayTraceCloud> cone_model = cone->getModels(false);
+    //std::vector<RayTraceCloud> cone_model = cone->getModels(false);
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
     //display_viewer_2(filters->visualize(clusters.at(0)));
+    std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+    std::cout << "cluster size: " << clusters.size() << std::endl;
+    int index = ui.bla->value();
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr vfh = filters->calculate_vfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr ourcvfh = filters->calculate_ourcvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
+
+    std::cout << "vfh: " << std::endl << *vfh << std::endl;
+    std::cout << "ourcvfh: " << std::endl << *ourcvfh << std::endl;
+
+    display_viewer_2(filters->visualize(clusters.at(index)));
+    ui.bla->setRange(0,clusters.size()-1);
 
     //display_viewer_2(filters->visualize(cluster_cloud.cloud));
 
@@ -366,24 +377,31 @@ void MainWindow::on_test_button_clicked(bool check)
         cluster_models.push_back(cluster_cloud);
     }
 
+    pcl::visualization::PCLPlotter vfhplotter;
+    vfhplotter.addFeatureHistogram(*vfh,308);
+    vfhplotter.addFeatureHistogram(*ourcvfh,308);
+    vfhplotter.plot();
+
     //ui.bla->setRange(0,cluster_models.size()-1);
     //display_viewer_2(filters->visualize(cluster_models.at(ui.bla->value()).cloud));
-    std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+//    std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
 
     //int freakthing_cluster = filters->search_for_model(cluster_models,freakthing_model);
     //std::cout << "For freak thing, best match is cluster " << freakthing_cluster << std::endl;
     //int box_cluster = filters->search_for_model(cluster_models,box_model);
     //std::cout << "For box thing, best match is cluster " << box_cluster << std::endl;
-    int cone_cluster = filters->search_for_model(cluster_models,freakthing_model);
-    std::cout << "For freak thing, best match is cluster " << cone_cluster << std::endl;
+//    int cone_cluster = filters->search_for_model(cluster_models,freakthing_model);
+//    std::cout << "For freak thing, best match is cluster " << cone_cluster << std::endl;
     //display_viewer_2(filters->visualize(cluster_models.at(freakthing_cluster).cloud));
 
-    std::vector<float> search_results_cone = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(cone_model));
-    std::vector<float> search_results_freak = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(freakthing_model));
+//    std::vector<float> search_results_cone = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(cone_model));
+//    std::vector<float> search_results_freak = filters->match_cloud(cluster_models.at(cone_cluster),filters->generate_search_tree(freakthing_model));
 
-    std::cout << "Result:" << std::endl;
-    std::cout << "Confidence level cone: " << search_results_cone[1] << ", selected model: " << search_results_cone[0] << std::endl;
-    std::cout << "Confidence level freakthing: " << search_results_freak[1] << ", selected model: " << search_results_freak[0] << std::endl;
+//    std::cout << "Result:" << std::endl;
+//    std::cout << "Confidence level cone: " << search_results_cone[1] << ", selected model: " << search_results_cone[0] << std::endl;
+//    std::cout << "Confidence level freakthing: " << search_results_freak[1] << ", selected model: " << search_results_freak[0] << std::endl;
+
+
 
     //int a = filters->match_cloud(cluster_cloud,filters->generate_search_tree(models));
     //std::cout << "found best match: " << a << std::endl;
@@ -424,6 +442,16 @@ void MainWindow::on_test_button_clicked(bool check)
 //    vis2.addPointCloud(final_part, red1, "target");
 //    vis2.spin();
 //    std::cout << models.at(a).pose << std::endl;
+
+//    pcl::ExtractIndices<pcl::PointXYZ> extract;
+//    extract.setInputCloud (incloud);
+//    extract.setIndices (inliers);
+//    extract.setNegative (false);
+
+//    // Get the points associated with the planar surface
+//    extract.filter (*cloud_plane);
+
+//    filteredCloud = cloud;
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)

@@ -45,7 +45,6 @@
 #include <pcl/registration/icp.h>
 
 
-
 struct RayTraceCloud {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud; /*!< The point cloud of the ray trace */
     Eigen::Matrix4f pose; /*!< The pose transformation from the camera to the mesh when the ray trace was generated */

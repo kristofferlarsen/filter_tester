@@ -53,5 +53,6 @@ file(GLOB_RECURSE QT_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINK
 ##############################################################################
 
 add_executable(qt_filter_tester ${QT_SOURCES} ${QT_RESOURCES_CPP} ${QT_FORMS_HPP} ${QT_MOC_HPP} src/modelloader.cpp include/qt_filter_tester/modelloader.hpp)
+
 target_link_libraries(qt_filter_tester ${QT_LIBRARIES} ${catkin_LIBRARIES} ${VTK_LIBRARIES} yaml-cpp)
 install(TARGETS qt_filter_tester RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
