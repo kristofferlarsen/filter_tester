@@ -113,8 +113,8 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
-    render->setCloudResolution(300);
-    render->setTesselation_level(1);
+    render->setCloudResolution(200);
+    render->setTesselation_level(2);
     render->populateLoader();
 }
 
