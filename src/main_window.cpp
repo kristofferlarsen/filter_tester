@@ -30,11 +30,11 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filter_changed_flag = true;
     init_ui_elemets();
 
-    freakthing = new ModelLoader("freakthing-42-100");
-    freakthing->populateLoader();
+    //freakthing = new ModelLoader("freakthing-42-100");
+    //freakthing->populateLoader();
     //box = new ModelLoader("box-42-100");
     //box->populateLoader();
-    cone = new ModelLoader("cone-42-100");
+    cone = new ModelLoader("cone-42-200");
     cone->populateLoader();
 }
 
@@ -113,7 +113,7 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
-    render->setCloudResolution(100);
+    render->setCloudResolution(300);
     render->setTesselation_level(1);
     render->populateLoader();
 }
@@ -355,16 +355,14 @@ void MainWindow::on_test_button_clicked(bool check)
     //std::vector<RayTraceCloud> cone_model = cone->getModels(false);
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
     //display_viewer_2(filters->visualize(clusters.at(0)));
-    std::cout << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
-    std::cout << "cluster size: " << clusters.size() << std::endl;
     int index = ui.bla->value();
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr vfh = filters->calculate_vfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr ourcvfh = filters->calculate_ourcvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
+    //pcl::PointCloud<pcl::VFHSignature308>::Ptr vfh = filters->calculate_vfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
+    //pcl::PointCloud<pcl::VFHSignature308>::Ptr ourcvfh = filters->calculate_ourcvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
 
-    std::cout << "vfh: " << std::endl << *vfh << std::endl;
-    std::cout << "ourcvfh: " << std::endl << *ourcvfh << std::endl;
+    //std::cout << "vfh: " << std::endl << *vfh << std::endl;
+    //std::cout << "ourcvfh: " << std::endl << *ourcvfh << std::endl;
 
-    display_viewer_2(filters->visualize(clusters.at(index)));
+    //display_viewer_2(filters->visualize(clusters.at(index)));
     ui.bla->setRange(0,clusters.size()-1);
 
     //display_viewer_2(filters->visualize(cluster_cloud.cloud));
@@ -374,13 +372,42 @@ void MainWindow::on_test_button_clicked(bool check)
         RayTraceCloud cluster_cloud;
         cluster_cloud.cloud = clusters.at(i);
         cluster_cloud = filters->calculate_features(cluster_cloud);
+        //cluster_cloud.global_descriptors = filters->compute_cvfh_descriptors(cluster_cloud.cloud);
         cluster_models.push_back(cluster_cloud);
+        //std::cout << "Vfh descriptors in cvfh descriptor: " << cluster_cloud.global_descriptors->points.size() << std::endl;
     }
 
-    pcl::visualization::PCLPlotter vfhplotter;
-    vfhplotter.addFeatureHistogram(*vfh,308);
-    vfhplotter.addFeatureHistogram(*ourcvfh,308);
-    vfhplotter.plot();
+    std::vector<RayTraceCloud> cone_models = cone->getModels();
+    //change global descriptor to cvfh
+    //for (int i = 0; i<cone_models.size(); i++){
+        //cone_models.at(i).global_descriptors = filters->compute_cvfh_descriptors(cone_models.at(i).cloud);
+    //}
+    //generate tree with cvfh descriptors
+    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr tree;
+    tree = filters->generate_search_tree(cone_models);
+
+    //std::cout << "best match:" << result.at(0) << ", condifence level: " << result.at(1) << std::endl;
+
+//    for(int i = 0; i< 4; i++){
+//        std::cout << "cluster nr. " << i << std::endl;
+//        std::vector<float> result = filters->match_cloud(cluster_models.at(i),tree);
+//        std::cout << "best match:" << result.at(0) << ", condifence level: " << result.at(1) << std::endl;
+//        if(i == 1){
+//            display_viewer_2(filters->visualize(cone_models.at(result.at(0)).cloud));
+//        }
+//    }
+
+//    for(int i = 0; i< cluster_models.size(); i++){
+//        std::vector<float> result = filters->match_cloud(cluster_models.at(i),tree);
+//        std::cout << "model nr: " << result.at(0) << ", confidence: " << result.at(1) << std::endl;
+//    }
+
+
+
+//    pcl::visualization::PCLPlotter vfhplotter;
+//    vfhplotter.addFeatureHistogram(*vfh,308);
+//    vfhplotter.addFeatureHistogram(*ourcvfh,308);
+//    vfhplotter.plot();
 
     //ui.bla->setRange(0,cluster_models.size()-1);
     //display_viewer_2(filters->visualize(cluster_models.at(ui.bla->value()).cloud));

@@ -30,6 +30,21 @@ int PclFilters::search_for_model(std::vector<RayTraceCloud> clusters,
     return correct_cluster;
 }
 
+void PclFilters::ransac_recognition(std::vector<RayTraceCloud> models,
+                                    RayTraceCloud object)
+{
+    pcl::recognition::ObjRecRANSAC recognition(40.0,5.0);
+    std::list<pcl::recognition::ObjRecRANSAC::Output> matchingList;
+    for(int i = 0; i< models.size(); i++){
+        QString name = "model_";
+        name.append(QString::number(i));
+        recognition.addModel(*models.at(i).cloud,*models.at(i).normals,name.toStdString());
+    }
+    recognition.recognize(*models.at(0).cloud,*models.at(0).normals,matchingList,0.99);
+
+    std::cout << "size of list: " << matchingList.size() << std::endl;
+}
+
 Eigen::Matrix4f PclFilters::calculateInitialAlignment(RayTraceCloud source, RayTraceCloud target, float min_sample_distance, float max_correspondence_distance, int nr_iterations)
 {
     pcl::SampleConsensusInitialAlignment<pcl::PointXYZ,pcl::PointXYZ,pcl::FPFHSignature33> sac_ia;
@@ -93,6 +108,7 @@ pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr PclFilters::generate_search_tree(std
         *global_descriptor += *(model.global_descriptors);
     }
     search_tree->setInputCloud(global_descriptor);
+    //std::cout << "Size of tree: " << global_descriptor->size() << std::endl;
     return (search_tree);
 }
 
@@ -101,7 +117,25 @@ std::vector<float> PclFilters::match_cloud(RayTraceCloud object_model,
     std::vector<float> returnvalues;
     std::vector<int> best_match(1);
     std::vector<float> square_distance(1);
+    //search_tree->nearestKSearch (object_model.global_descriptors->points[0],1,best_match,square_distance);
     search_tree->nearestKSearch (object_model.global_descriptors->points[0],1,best_match,square_distance);
+    returnvalues.push_back(best_match[0]);
+    returnvalues.push_back(square_distance[0]);
+    return (returnvalues);
+}
+
+std::vector<float> PclFilters::temp_matching_cvfh(RayTraceCloud object_model,
+                            pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree){
+    std::vector<float> returnvalues;
+    std::vector<int> best_match(1);
+    std::vector<float> square_distance(1);
+    //search_tree->nearestKSearch (object_model.global_descriptors->points[0],1,best_match,square_distance);
+    int nr_of_descriptors = object_model.global_descriptors->points.size();
+    for(int i = 0; i< nr_of_descriptors; i++){
+        search_tree->nearestKSearch (object_model.global_descriptors->points[i],1,best_match,square_distance);
+        std::cout << "loop nr: " << i << ", best match: " << best_match.at(0) << ", confidence level: " << square_distance.at(0) << std::endl;
+    }
+    //search_tree->nearestKSearch (object_model.global_descriptors->points[0],1,best_match,square_distance);
     returnvalues.push_back(best_match[0]);
     returnvalues.push_back(square_distance[0]);
     return (returnvalues);
@@ -196,11 +230,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(
     seg.setMethodType (pcl::SAC_RANSAC);
     seg.setMaxIterations (100);
     seg.setDistanceThreshold (distance);
-
     int i=0, nr_points = (int) incloud->points.size ();
-
-
-
 
     while (incloud->points.size () > 0.3 * nr_points)
     {

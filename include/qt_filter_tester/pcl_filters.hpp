@@ -43,6 +43,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/registration/icp.h>
+#include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 
 
 struct RayTraceCloud {
@@ -70,6 +71,9 @@ public:
     int search_for_model(std::vector<RayTraceCloud> clusters,
                          std::vector<RayTraceCloud> model);
 
+    void ransac_recognition(std::vector<RayTraceCloud> models,
+                            RayTraceCloud object);
+
     Eigen::Matrix4f calculateInitialAlignment(RayTraceCloud source,
                                               RayTraceCloud target,
                                               float min_sample_distance,
@@ -89,7 +93,10 @@ public:
     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr generate_search_tree(std::vector<RayTraceCloud> models);
 
     std::vector<float> match_cloud(RayTraceCloud object_model,
-                    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
+                                   pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
+
+    std::vector<float> temp_matching_cvfh(RayTraceCloud object_model,
+                                pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                                                             float min_scale,
@@ -102,7 +109,8 @@ public:
                                                                          pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints,
                                                                          float feature_radius);
 
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points, pcl::PointCloud<pcl::Normal>::Ptr normals);
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points,
+                                                                         pcl::PointCloud<pcl::Normal>::Ptr normals);
 
 
     RayTraceCloud calculate_features(RayTraceCloud inputcloud);
