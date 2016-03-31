@@ -68,18 +68,50 @@ public:
     PclFilters(QObject *parent = 0);
     ~PclFilters();
 
+    /*!
+     * \brief search_for_model
+     * \param clusters
+     * \param model
+     * \return
+     */
     int search_for_model(std::vector<RayTraceCloud> clusters,
                          std::vector<RayTraceCloud> model);
 
+    /*!
+     * \brief ransac_recognition
+     * \param models
+     * \param object
+     */
     void ransac_recognition(std::vector<RayTraceCloud> models,
                             RayTraceCloud object);
 
+    /*!
+     * \brief calculateInitialAlignment
+     * \param source
+     * \param target
+     * \param min_sample_distance
+     * \param max_correspondence_distance
+     * \param nr_iterations
+     * \return
+     */
     Eigen::Matrix4f calculateInitialAlignment(RayTraceCloud source,
                                               RayTraceCloud target,
                                               float min_sample_distance,
                                               float max_correspondence_distance,
                                               int nr_iterations);
 
+    /*!
+     * \brief calculateRefinedAlignment
+     * \param source
+     * \param target
+     * \param initial_alignment
+     * \param max_correspondence_distance
+     * \param outlier_rejection_threshold
+     * \param transformation_epsilon
+     * \param eucledian_fitness_epsilon
+     * \param max_iterations
+     * \return
+     */
     Eigen::Matrix4f calculateRefinedAlignment (RayTraceCloud source,
                                                RayTraceCloud target,
                                                Eigen::Matrix4f initial_alignment,
@@ -89,26 +121,61 @@ public:
                                                float eucledian_fitness_epsilon,
                                                int max_iterations);
 
-
+    /*!
+     * \brief generate_search_tree
+     * \param models
+     * \return
+     */
     pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr generate_search_tree(std::vector<RayTraceCloud> models);
 
+    /*!
+     * \brief match_cloud
+     * \param object_model
+     * \param search_tree
+     * \return
+     */
     std::vector<float> match_cloud(RayTraceCloud object_model,
                                    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
-
+    /*!
+     * \brief temp_matching_cvfh
+     * \param object_model
+     * \param search_tree
+     * \return
+     */
     std::vector<float> temp_matching_cvfh(RayTraceCloud object_model,
                                 pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr search_tree);
-
+    /*!
+     * \brief calculate_keypoints
+     * \param cloud
+     * \param min_scale
+     * \param nr_octaves
+     * \param nr_scales_per_octave
+     * \param min_contrast
+     * \return
+     */
     pcl::PointCloud<pcl::PointXYZ>::Ptr calculate_keypoints(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                                                             float min_scale,
                                                             int nr_octaves,
                                                             int nr_scales_per_octave,
                                                             float min_contrast);
-
+    /*!
+     * \brief calculate_local_descritor
+     * \param cloud
+     * \param normal
+     * \param keypoints
+     * \param feature_radius
+     * \return
+     */
     pcl::PointCloud<pcl::FPFHSignature33>::Ptr calculate_local_descritor(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,
                                                                          pcl::PointCloud<pcl::Normal>::Ptr normal,
                                                                          pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints,
                                                                          float feature_radius);
-
+    /*!
+     * \brief calculate_vfh_descriptors
+     * \param points
+     * \param normals
+     * \return
+     */
     pcl::PointCloud<pcl::VFHSignature308>::Ptr calculate_vfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr points,
                                                                          pcl::PointCloud<pcl::Normal>::Ptr normals);
 

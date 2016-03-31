@@ -1,6 +1,5 @@
 <map id="main_window.hpp" name="main_window.hpp">
-<area shape="rect" id="node5" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="811,88,892,115"/>
-<area shape="rect" id="node18" href="$point__cloud__ray__trace_8hpp.html" title="point_cloud_ray_trace.hpp" alt="" coords="2078,88,2252,115"/>
-<area shape="rect" id="node40" href="$modelloader_8hpp.html" title="modelloader.hpp" alt="" coords="2388,88,2504,115"/>
-<area shape="rect" id="node31" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="3235,179,3337,205"/>
+<area shape="rect" id="node5" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="813,88,895,115"/>
+<area shape="rect" id="node18" href="$modelloader_8hpp.html" title="modelloader.hpp" alt="" coords="2168,88,2284,115"/>
+<area shape="rect" id="node32" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="2574,179,2676,205"/>
 </map>
