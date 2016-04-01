@@ -30,8 +30,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filter_changed_flag = true;
     init_ui_elemets();
 
-    //freakthing = new ModelLoader("freakthing-42-100");
-    //freakthing->populateLoader();
+    freakthing = new ModelLoader("freakthing-42-200");
+    freakthing->populateLoader();
     //box = new ModelLoader("box-42-100");
     //box->populateLoader();
     cone = new ModelLoader("cone-42-200");
@@ -111,6 +111,9 @@ void MainWindow::render_raytrace(std::string partName, std::string directory)
     pcl::fromPCLPointCloud2(mesh.cloud,scaled_mesh);
     pcl::transformPointCloud(scaled_mesh,scaled_mesh,scaleMatrix);
     pcl::toPCLPointCloud2(scaled_mesh, mesh.cloud);
+
+
+    //pcl::io::savePolygonFileSTL("/home/minions/test.stl",mesh);
 
     ModelLoader *render = new ModelLoader(mesh, partName);
     render->setCloudResolution(200);
@@ -353,9 +356,12 @@ void MainWindow::on_test_button_clicked(bool check)
     //std::vector<RayTraceCloud> freakthing_model = freakthing->getModels(false);
     //std::vector<RayTraceCloud> box_model = box->getModels(false);
     //std::vector<RayTraceCloud> cone_model = cone->getModels(false);
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
+    //std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters = filters->cluster_extraction(input_cloud,0.005);
+
     //display_viewer_2(filters->visualize(clusters.at(0)));
-    int index = ui.bla->value();
+
+    //int index = ui.bla->value();
+
     //pcl::PointCloud<pcl::VFHSignature308>::Ptr vfh = filters->calculate_vfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
     //pcl::PointCloud<pcl::VFHSignature308>::Ptr ourcvfh = filters->calculate_ourcvfh_descriptors(clusters.at(index),filters->get_normals(clusters.at(index),0.05));
 
@@ -363,28 +369,28 @@ void MainWindow::on_test_button_clicked(bool check)
     //std::cout << "ourcvfh: " << std::endl << *ourcvfh << std::endl;
 
     //display_viewer_2(filters->visualize(clusters.at(index)));
-    ui.bla->setRange(0,clusters.size()-1);
+//    ui.bla->setRange(0,clusters.size()-1);
 
     //display_viewer_2(filters->visualize(cluster_cloud.cloud));
 
-    std::vector<RayTraceCloud> cluster_models;
-    for(int i = 0; i < clusters.size(); i++){
-        RayTraceCloud cluster_cloud;
-        cluster_cloud.cloud = clusters.at(i);
-        cluster_cloud = filters->calculate_features(cluster_cloud);
-        //cluster_cloud.global_descriptors = filters->compute_cvfh_descriptors(cluster_cloud.cloud);
-        cluster_models.push_back(cluster_cloud);
-        //std::cout << "Vfh descriptors in cvfh descriptor: " << cluster_cloud.global_descriptors->points.size() << std::endl;
-    }
+//    std::vector<RayTraceCloud> cluster_models;
+//    for(int i = 0; i < clusters.size(); i++){
+//        RayTraceCloud cluster_cloud;
+//        cluster_cloud.cloud = clusters.at(i);
+//        cluster_cloud = filters->calculate_features(cluster_cloud);
+//        //cluster_cloud.global_descriptors = filters->compute_cvfh_descriptors(cluster_cloud.cloud);
+//        cluster_models.push_back(cluster_cloud);
+//        //std::cout << "Vfh descriptors in cvfh descriptor: " << cluster_cloud.global_descriptors->points.size() << std::endl;
+//    }
 
-    std::vector<RayTraceCloud> cone_models = cone->getModels();
+//    std::vector<RayTraceCloud> cone_models = cone->getModels();
     //change global descriptor to cvfh
     //for (int i = 0; i<cone_models.size(); i++){
         //cone_models.at(i).global_descriptors = filters->compute_cvfh_descriptors(cone_models.at(i).cloud);
     //}
     //generate tree with cvfh descriptors
-    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr tree;
-    tree = filters->generate_search_tree(cone_models);
+//    pcl::KdTreeFLANN<pcl::VFHSignature308>::Ptr tree;
+//    tree = filters->generate_search_tree(cone_models);
 
     //std::cout << "best match:" << result.at(0) << ", condifence level: " << result.at(1) << std::endl;
 
@@ -479,6 +485,100 @@ void MainWindow::on_test_button_clicked(bool check)
 //    extract.filter (*cloud_plane);
 
 //    filteredCloud = cloud;
+
+
+
+
+    //#############################Her kan vi gjøre testing på punktskyene
+
+    //std::cout << "main size: " << input_cloud->points.size() << std::endl;
+    //copy pointcloud to 2 copies
+    pcl::PointCloud<pcl::PointXYZ>::Ptr left_section(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr right_section(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*input_cloud,*left_section);
+    //Passtrough
+    left_section = filters->passthrough_filter(left_section,0.760,1.190,"z");
+    pcl::copyPointCloud(*left_section,*right_section);
+    left_section = filters->passthrough_filter(left_section,-0.510,-0.130,"x");
+    right_section = filters->passthrough_filter(right_section,-0.130,0.270,"x");
+    //Voxelgrid
+    left_section = filters->voxel_grid_filter(left_section,0.003,0.003,0.003);
+    right_section = filters->voxel_grid_filter(right_section,0.003,0.003,0.003);
+
+//    std::cout << "left: " << filters->cluster_extraction(left_section,0.005).size() << std::endl;
+//    std::cout << "right: " << filters->cluster_extraction(right_section,0.005).size() << std::endl;
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> left_clusters = filters->cluster_extraction(left_section,0.005);
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> right_clusters = filters->cluster_extraction(right_section,0.005);
+    //left_section = filters->combine_clouds(filters->cluster_extraction(left_section,0.005));
+    //right_section = filters->combine_clouds(filters->cluster_extraction(right_section,0.005));
+
+    RayTraceCloud left_part, right_part;
+    if(left_clusters.size() != 1){
+        //more than one cluster, find the correct one
+    }
+    else{
+        left_part.cloud = left_clusters.at(0);
+    }
+    if(right_clusters.size() != 1){
+        //more than one cluster, find the correct one
+    }
+    else{
+        right_part.cloud = right_clusters.at(0);
+    }
+    left_part = filters->calculate_features(left_part);
+    right_part = filters->calculate_features(right_part);
+    //from here, we assume that left and right part contains the correct cluster for each of the parts.
+
+    std::vector<float> result_left,result_right;
+    result_left = filters->match_cloud(left_part,filters->generate_search_tree(freakthing->getModels()));
+    result_right = filters->match_cloud(right_part,filters->generate_search_tree(cone->getModels()));
+
+    //std::cout << "Freakthing results: " << std::endl << "Best model: " << result_left.at(0) << ", Confidence level: " << result_left.at(1) << std::endl;
+    //std::cout << "Cone results: " << std::endl << "Best model: " << result_right.at(0) << ", Confidence level: " << result_right.at(1) << std::endl;
+
+
+    Eigen::Matrix4f initial_cone = filters->calculateInitialAlignment(cone->getModels().at(result_right.at(0)),right_part,0.05,1,50);
+    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+    Eigen::Matrix4f final_cone = filters->calculateRefinedAlignment(cone->getModels().at(result_right.at(0)),right_part,initial_cone,0.1,0.1,1e-10,0.00001,50);
+    //std::cout << "Final alignment: " << std::endl << final << std::endl;
+
+    Eigen::Matrix4f initial_freak = filters->calculateInitialAlignment(freakthing->getModels().at(result_left.at(0)),left_part,0.05,1,50);
+    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+    Eigen::Matrix4f final_freak = filters->calculateRefinedAlignment(freakthing->getModels().at(result_left.at(0)),left_part,initial_freak,0.1,0.1,1e-10,0.00001,50);
+    //std::cout << "Final alignment: " << std::endl << final << std::endl;
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr freak_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*freakthing->getModels().at(result_left.at(0)).cloud,*freak_positioned);
+    pcl::transformPointCloud(*freak_positioned,*freak_positioned,final_freak);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cone_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*cone->getModels().at(result_right.at(0)).cloud,*cone_positioned);
+    pcl::transformPointCloud(*cone_positioned,*cone_positioned,final_cone);
+
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_copy,cone_transformed,freak_transformed;
+    scene_copy = filters->color_cloud(input_cloud,255,255,255);
+    cone_transformed = filters->color_cloud(cone_positioned,255,0,0);
+    freak_transformed = filters->color_cloud(freak_positioned,0,255,0);
+    *scene_copy += *cone_transformed;
+    *scene_copy += *freak_transformed;
+    display_viewer_2(filters->visualize_rgb(scene_copy));
+
+    //pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp(new pcl::PointCloud<pcl::PointXYZRGB>);
+    //*temp += *filters->color_cloud(left_section,255,0,0);
+    //*temp += *filters->color_cloud(right_section,0,255,0);
+    //display_viewer_2(filters->visualize_rgb(temp));
+
+
+    //passtrough
+    //voxelgrid
+    //plane segmentation
+    //viewpoint matching
+    //initial allignment
+    //icp
+
+
+
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)
@@ -677,6 +777,29 @@ void MainWindow::on_filter_input_2_valueChanged(double d){
 void MainWindow::on_filter_input_3_valueChanged(double d){
     if(continously_update_filter_flag){
         Q_EMIT on_run_action_button_clicked(true);
+    }
+}
+
+void MainWindow::on_scalebutton_clicked(bool check)
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),"/home/minions",tr("PointCload (*.pcd)"));
+    pcl::PointCloud<pcl::PointXYZ>::Ptr displayCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    if(pcl::io::loadPCDFile<pcl::PointXYZ>(fileName.toUtf8().constData(), *displayCloud) == -1)
+    {
+        print_to_logg("Could not load file");
+        return;
+    }
+
+    pcl::PointCloud<pcl::PointXYZ> scaled_cloud;
+    Eigen::Matrix4f scaleMatrix = Eigen::Matrix4f::Identity();
+    scaleMatrix(0,0)=1000;
+    scaleMatrix(1,1)=1000;
+    scaleMatrix(2,2)=1000;
+    pcl::transformPointCloud(*displayCloud,scaled_cloud,scaleMatrix);
+
+    QString savefile = QFileDialog::getSaveFileName(this,tr("Save cloud"),"/home/minions",tr("PointCloud (*.pcd)"));
+    if(savefile.length() != 0){
+        pcl::io::savePCDFileASCII(savefile.toUtf8().constData(), scaled_cloud);
     }
 }
 

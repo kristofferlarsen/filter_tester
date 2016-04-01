@@ -47,13 +47,26 @@
 
 
 struct RayTraceCloud {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud; /*!< The point cloud of the ray trace */
-    Eigen::Matrix4f pose; /*!< The pose transformation from the camera to the mesh when the ray trace was generated */
-    float enthropy; /*!< The amount of the whole mesh seen in the camera */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints; /*! The clouds keypoints */
-    pcl::PointCloud<pcl::Normal>::Ptr normals; /*! The clouds surface normal */
-    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors; /*! The clouds local descriptors */
-    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptors; /*! The clouds global descriptor */
+    /*! The point cloud of the ray trace */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+
+    /*! The pose transformation from the camera to the mesh when the ray trace was generated */
+    Eigen::Matrix4f pose;
+
+    /*! The amount of the whole mesh seen in the camera */
+    float enthropy;
+
+    /*! The clouds keypoints */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints;
+
+    /*! The clouds surface normal */
+    pcl::PointCloud<pcl::Normal>::Ptr normals;
+
+    /*! The clouds local descriptors */
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr local_descriptors;
+
+    /*! The clouds global descriptor */
+    pcl::PointCloud<pcl::VFHSignature308>::Ptr global_descriptors;
 };
 
 

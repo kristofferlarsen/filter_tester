@@ -85,6 +85,7 @@ public Q_SLOTS:
     void on_filter_input_1_valueChanged(double d);
     void on_filter_input_2_valueChanged(double d);
     void on_filter_input_3_valueChanged(double d);
+    void on_scalebutton_clicked(bool check);
     //manual connection
 
 private:
