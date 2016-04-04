@@ -9,7 +9,7 @@
 ** Includes
 *****************************************************************************/
 #include "../include/qt_filter_tester/main_window.hpp"
-
+#include <ctime>
 
 namespace qt_filter_tester {
 
@@ -32,8 +32,8 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
 
     freakthing = new ModelLoader("freakthing-42-200");
     freakthing->populateLoader();
-    //box = new ModelLoader("box-42-100");
-    //box->populateLoader();
+    box = new ModelLoader("nuc-42-100");
+    box->populateLoader();
     cone = new ModelLoader("cone-42-200");
     cone->populateLoader();
 }
@@ -485,120 +485,144 @@ void MainWindow::on_test_button_clicked(bool check)
 //    extract.filter (*cloud_plane);
 
 //    filteredCloud = cloud;
+    std::clock_t begin = std::clock();
+
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr detectionCloud = filters->object_detection(input_cloud,box->getModels(),box->getModels());
+
+    std::clock_t end1 = std::clock();
+    display_viewer_2(filters->visualize_rgb(detectionCloud));
+    std::clock_t end2 = std::clock();
+    double time1 = double(end1-begin) / CLOCKS_PER_SEC;
+    double time2 = double(end2-begin) / CLOCKS_PER_SEC;
+    std::cout << "Elapsed time detection: " << time1 << std::endl;
+    std::cout << "Elapsed time total: " << time2 << std::endl;
 
 
 
+//    //#############################Her kan vi gjøre testing på punktskyene
 
-    //#############################Her kan vi gjøre testing på punktskyene
-
-    //std::cout << "main size: " << input_cloud->points.size() << std::endl;
-    //copy pointcloud to 2 copies
-    pcl::PointCloud<pcl::PointXYZ>::Ptr left_section(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr right_section(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::copyPointCloud(*input_cloud,*left_section);
-    //Passtrough
-    left_section = filters->passthrough_filter(left_section,0.760,1.190,"z");
-    pcl::copyPointCloud(*left_section,*right_section);
-    left_section = filters->passthrough_filter(left_section,-0.510,-0.130,"x");
-    right_section = filters->passthrough_filter(right_section,-0.130,0.270,"x");
-    //Voxelgrid
-    left_section = filters->voxel_grid_filter(left_section,0.003,0.003,0.003);
-    right_section = filters->voxel_grid_filter(right_section,0.003,0.003,0.003);
+//    //std::cout << "main size: " << input_cloud->points.size() << std::endl;
+//    //copy pointcloud to 2 copies
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr left_section(new pcl::PointCloud<pcl::PointXYZ>);
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr right_section(new pcl::PointCloud<pcl::PointXYZ>);
+//    std::clock_t start1 = std::clock();
+//    pcl::copyPointCloud(*input_cloud,*left_section);
+//    //Passtrough
+//    left_section = filters->passthrough_filter(left_section,0.760,1.190,"z");
+//    pcl::copyPointCloud(*left_section,*right_section);
+//    left_section = filters->passthrough_filter(left_section,-0.510,-0.130,"x");
+//    right_section = filters->passthrough_filter(right_section,-0.130,0.270,"x");
+//    //Voxelgrid
+//    left_section = filters->voxel_grid_filter(left_section,0.001,0.001,0.001);
+//    right_section = filters->voxel_grid_filter(right_section,0.001,0.001,0.001);
 
 //    std::cout << "left: " << filters->cluster_extraction(left_section,0.005).size() << std::endl;
 //    std::cout << "right: " << filters->cluster_extraction(right_section,0.005).size() << std::endl;
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> left_clusters = filters->cluster_extraction(left_section,0.005);
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> right_clusters = filters->cluster_extraction(right_section,0.005);
-    //left_section = filters->combine_clouds(filters->cluster_extraction(left_section,0.005));
-    //right_section = filters->combine_clouds(filters->cluster_extraction(right_section,0.005));
+//    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> left_clusters = filters->cluster_extraction(left_section,0.005);
+//    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> right_clusters = filters->cluster_extraction(right_section,0.005);
+//    //left_section = filters->combine_clouds(filters->cluster_extraction(left_section,0.005));
+//    //right_section = filters->combine_clouds(filters->cluster_extraction(right_section,0.005));
 
-    RayTraceCloud left_part, right_part;
-    if(left_clusters.size() != 1){
-        //more than one cluster, find the correct one
-        std::vector<RayTraceCloud> left_cluster_models;
-        for(int i = 0; i<left_clusters.size(); i++){
-            RayTraceCloud tmp_model;
-            tmp_model.cloud = left_clusters.at(i);
-            left_cluster_models.push_back(filters->calculate_features(tmp_model));
-        }
-        std::cout << "her må det gjøres gitt" << std::endl;
-        int tmp = filters->search_for_model(left_cluster_models,freakthing->getModels());
-        left_part.cloud = left_clusters.at(tmp);
-    }
-    else{
-        left_part.cloud = left_clusters.at(0);
-    }
-    if(right_clusters.size() != 1){
-        //more than one cluster, find the correct one
-        std::vector<RayTraceCloud> right_cluster_models;
-        for(int i = 0; i<right_clusters.size(); i++){
-            RayTraceCloud tmp_model;
-            tmp_model.cloud = right_clusters.at(i);
-            right_cluster_models.push_back(filters->calculate_features(tmp_model));
-        }
-        std::cout << "her må det gjøres gitt" << std::endl;
-        int tmp = filters->search_for_model(right_cluster_models,cone->getModels());
-        right_part.cloud = right_clusters.at(tmp);
-    }
-    else{
-        right_part.cloud = right_clusters.at(0);
-    }
-    left_part = filters->calculate_features(left_part);
-    right_part = filters->calculate_features(right_part);
-    //from here, we assume that left and right part contains the correct cluster for each of the parts.
+//    std::clock_t end1 = std::clock();
+//    double time1 = double(end1 - start1) / CLOCKS_PER_SEC;
+//    std::cout << "Time for filtering and cluster extraction: " << time1 << std::endl;
 
-    std::vector<float> result_left,result_right;
-    result_left = filters->match_cloud(left_part,filters->generate_search_tree(freakthing->getModels()));
-    result_right = filters->match_cloud(right_part,filters->generate_search_tree(cone->getModels()));
-
-    //std::cout << "Freakthing results: " << std::endl << "Best model: " << result_left.at(0) << ", Confidence level: " << result_left.at(1) << std::endl;
-    //std::cout << "Cone results: " << std::endl << "Best model: " << result_right.at(0) << ", Confidence level: " << result_right.at(1) << std::endl;
+//    RayTraceCloud left_part, right_part;
+//    if(left_clusters.size() != 1){
+//        //more than one cluster, find the correct one
+//        std::vector<RayTraceCloud> left_cluster_models;
+//        for(int i = 0; i<left_clusters.size(); i++){
+//            RayTraceCloud tmp_model;
+//            tmp_model.cloud = left_clusters.at(i);
+//            left_cluster_models.push_back(filters->calculate_features(tmp_model));
+//        }
+//        std::clock_t begin = std::clock();
+//        int tmp = filters->search_for_model(left_cluster_models,freakthing->getModels());
+//        std::clock_t end = std::clock();
+//        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+//        std::cout << "Time to search for model: " << elapsed_secs << std::endl;
+//        left_part = left_cluster_models.at(tmp);
+//    }
+//    else{
+//        left_part.cloud = left_clusters.at(0);
+//        left_part = filters->calculate_features(left_part);
+//    }
+//    if(right_clusters.size() != 1){
+//        //more than one cluster, find the correct one
+//        std::vector<RayTraceCloud> right_cluster_models;
+//        for(int i = 0; i<right_clusters.size(); i++){
+//            RayTraceCloud tmp_model;
+//            tmp_model.cloud = right_clusters.at(i);
+//            right_cluster_models.push_back(filters->calculate_features(tmp_model));
+//        }
+//        int tmp = filters->search_for_model(right_cluster_models,cone->getModels());
+//        right_part = right_cluster_models.at(tmp);
+//    }
+//    else{
+//        right_part.cloud = right_clusters.at(0);
+//        right_part = filters->calculate_features(right_part);
+//    }
 
 
-    Eigen::Matrix4f initial_cone = filters->calculateInitialAlignment(cone->getModels().at(result_right.at(0)),right_part,0.05,1,50);
-    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
-    Eigen::Matrix4f final_cone = filters->calculateRefinedAlignment(cone->getModels().at(result_right.at(0)),right_part,initial_cone,0.1,0.1,1e-10,0.00001,50);
-    //std::cout << "Final alignment: " << std::endl << final << std::endl;
+//    //from here, we assume that left and right part contains the correct cluster for each of the parts.
+//    std::clock_t start2 = std::clock();
+//    std::vector<float> result_left,result_right;
+//    result_left = filters->match_cloud(left_part,filters->generate_search_tree(freakthing->getModels()));
+//    result_right = filters->match_cloud(right_part,filters->generate_search_tree(cone->getModels()));
 
-    Eigen::Matrix4f initial_freak = filters->calculateInitialAlignment(freakthing->getModels().at(result_left.at(0)),left_part,0.05,1,50);
-    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
-    Eigen::Matrix4f final_freak = filters->calculateRefinedAlignment(freakthing->getModels().at(result_left.at(0)),left_part,initial_freak,0.1,0.1,1e-10,0.00001,50);
-    //std::cout << "Final alignment: " << std::endl << final << std::endl;
+//    std::clock_t end2 = std::clock();
+//    double time2 = double(end2 - start2) / CLOCKS_PER_SEC;
+//    std::cout << "Time for viewpoint matching: " << time2 << std::endl;
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr freak_positioned(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::copyPointCloud(*freakthing->getModels().at(result_left.at(0)).cloud,*freak_positioned);
-    pcl::transformPointCloud(*freak_positioned,*freak_positioned,final_freak);
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cone_positioned(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::copyPointCloud(*cone->getModels().at(result_right.at(0)).cloud,*cone_positioned);
-    pcl::transformPointCloud(*cone_positioned,*cone_positioned,final_cone);
+//    std::clock_t start3 = std::clock();
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_copy,cone_transformed,freak_transformed;
-    scene_copy = filters->color_cloud(input_cloud,255,255,255);
-    cone_transformed = filters->color_cloud(cone_positioned,255,0,0);
-    freak_transformed = filters->color_cloud(freak_positioned,0,255,0);
-    *scene_copy += *cone_transformed;
-    *scene_copy += *freak_transformed;
-    display_viewer_2(filters->visualize_rgb(scene_copy));
+//    Eigen::Matrix4f initial_cone = filters->calculateInitialAlignment(cone->getModels().at(result_right.at(0)),right_part,0.01,1,50);
+//    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+//    Eigen::Matrix4f final_cone = filters->calculateRefinedAlignment(cone->getModels().at(result_right.at(0)),right_part,initial_cone,0.1,0.1,1e-10,0.00001,50);
+//    //std::cout << "Final alignment: " << std::endl << final << std::endl;
 
-    pcl::io::savePCDFileBinary("/home/minions/Desktop/object_detection.pcd",*scene_copy);
+//    std::clock_t end3 = std::clock();
+//    double time3 = double(end3 - start3) / CLOCKS_PER_SEC;
+//    std::cout << "Time for part 1: " << time3 << std::endl;
+
+//    std::clock_t start4 = std::clock();
+
+//    Eigen::Matrix4f initial_freak = filters->calculateInitialAlignment(freakthing->getModels().at(result_left.at(0)),left_part,0.01,1,50);
+//    //std::cout << "Initial alignment: " << std::endl << initial << std::endl;
+//    Eigen::Matrix4f final_freak = filters->calculateRefinedAlignment(freakthing->getModels().at(result_left.at(0)),left_part,initial_freak,0.1,0.1,1e-10,0.00001,50);
+//    //std::cout << "Final alignment: " << std::endl << final << std::endl;
+
+//    std::clock_t end4 = std::clock();
+//    double time4 = double(end4 - start4) / CLOCKS_PER_SEC;
+//    std::cout << "Time for part 2: " << time4 << std::endl;
+
+//    //Transform the models
+
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr freak_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+//    pcl::copyPointCloud(*freakthing->getModels().at(result_left.at(0)).cloud,*freak_positioned);
+//    pcl::transformPointCloud(*freak_positioned,*freak_positioned,final_freak);
+
+//    pcl::PointCloud<pcl::PointXYZ>::Ptr cone_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+//    pcl::copyPointCloud(*cone->getModels().at(result_right.at(0)).cloud,*cone_positioned);
+//    pcl::transformPointCloud(*cone_positioned,*cone_positioned,final_cone);
+
+//    //Display the cloud and models
+//    pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_copy,cone_transformed,freak_transformed;
+//    scene_copy = filters->color_cloud(input_cloud,255,255,255);
+//    cone_transformed = filters->color_cloud(cone_positioned,255,0,0);
+//    freak_transformed = filters->color_cloud(freak_positioned,0,255,0);
+//    *scene_copy += *cone_transformed;
+//    *scene_copy += *freak_transformed;
+//    display_viewer_2(filters->visualize_rgb(scene_copy));
+
+//    pcl::io::savePCDFileBinary("/home/minions/Desktop/object_detection.pcd",*scene_copy);
 
     //pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp(new pcl::PointCloud<pcl::PointXYZRGB>);
     //*temp += *filters->color_cloud(left_section,255,0,0);
     //*temp += *filters->color_cloud(right_section,0,255,0);
     //display_viewer_2(filters->visualize_rgb(temp));
-
-
-    //passtrough
-    //voxelgrid
-    //plane segmentation
-    //viewpoint matching
-    //initial allignment
-    //icp
-
-
-
 }
 
 void MainWindow::on_create_database_part_clicked(bool check)

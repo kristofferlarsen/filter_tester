@@ -24,10 +24,6 @@
 #include <QStringListModel>
 #include <sensor_msgs/PointCloud2.h>
 #include <std_msgs/String.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
 
 
 /*****************************************************************************

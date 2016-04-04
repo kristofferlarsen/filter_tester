@@ -26,7 +26,6 @@ int PclFilters::search_for_model(std::vector<RayTraceCloud> clusters,
             correct_cluster = i;
         }
     }
-    std::cout << "Minimum distance found: " << min_distance << std::endl;
     return correct_cluster;
 }
 
@@ -413,7 +412,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PclFilters::combine_clouds(std::vector<pcl::
 
 }
 
-pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::compute_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::calculate_cvfh_descriptors(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     pcl::PointCloud<pcl::VFHSignature308>::Ptr descriptors(new pcl::PointCloud<pcl::VFHSignature308>);
     pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(new pcl::search::KdTree<pcl::PointXYZ>);
@@ -524,7 +523,90 @@ pcl::PointCloud<pcl::VFHSignature308>::Ptr PclFilters::calculate_vfh_descriptors
 }
 
 
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr PclFilters::object_detection(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::vector<RayTraceCloud> model_a, std::vector<RayTraceCloud> model_b){
 
+    pcl::PointCloud<pcl::PointXYZ>::Ptr section_a(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr section_b(new pcl::PointCloud<pcl::PointXYZ>);
+
+    pcl::copyPointCloud(*cloud,*section_a);
+    //Passtrough
+    section_a = passthrough_filter(section_a,0.760,1.190,"z");
+    pcl::copyPointCloud(*section_a,*section_b);
+    section_a = passthrough_filter(section_a,-0.510,-0.130,"x");
+    section_b = passthrough_filter(section_b,-0.130,0.270,"x");
+    //Voxelgrid
+    section_a = voxel_grid_filter(section_a,0.001,0.001,0.001);
+    section_b = voxel_grid_filter(section_b,0.001,0.001,0.001);
+    //Cluster extraction
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters_section_a = cluster_extraction(section_a,0.005);
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters_section_b = cluster_extraction(section_b,0.005);
+
+    //find the cluster that containes the part we are looking for.
+    RayTraceCloud part_a, part_b;
+    if(clusters_section_a.size() != 1){
+        //more than one cluster, find the correct one
+        std::vector<RayTraceCloud> cluster_a_models;
+        for(int i = 0; i<clusters_section_a.size(); i++){
+            RayTraceCloud tmp_model;
+            tmp_model.cloud = clusters_section_a.at(i);
+            cluster_a_models.push_back(calculate_features(tmp_model));
+        }
+        int tmp = search_for_model(cluster_a_models,model_a);
+        part_a = cluster_a_models.at(tmp);
+    }
+    else{
+        part_a.cloud = clusters_section_a.at(0);
+        part_a = calculate_features(part_a);
+    }
+    if(clusters_section_b.size() != 1){
+        //more than one cluster, find the correct one
+        std::vector<RayTraceCloud> cluster_b_models;
+        for(int i = 0; i<clusters_section_b.size(); i++){
+            RayTraceCloud tmp_model;
+            tmp_model.cloud = clusters_section_b.at(i);
+            cluster_b_models.push_back(calculate_features(tmp_model));
+        }
+        int tmp = search_for_model(cluster_b_models,model_b);
+        part_b = cluster_b_models.at(tmp);
+    }
+    else{
+        part_b.cloud = clusters_section_b.at(0);
+        part_b = calculate_features(part_b);
+    }
+
+    //from here, we assume that left and right part contains the correct cluster for each of the parts.
+    std::vector<float> result_a,result_b;
+    result_a = match_cloud(part_a,generate_search_tree(model_a));
+    result_b = match_cloud(part_b,generate_search_tree(model_b));
+
+    //alignment part a
+    Eigen::Matrix4f initial_a = calculateInitialAlignment(model_a.at(result_a.at(0)),part_a,0.01,1,50);
+    Eigen::Matrix4f final_a = calculateRefinedAlignment(model_a.at(result_a.at(0)),part_a,initial_a,0.1,0.1,1e-10,0.00001,50);
+
+    //alignment part b
+    Eigen::Matrix4f initial_b = calculateInitialAlignment(model_b.at(result_b.at(0)),part_b,0.01,1,50);
+    Eigen::Matrix4f final_b = calculateRefinedAlignment(model_b.at(result_b.at(0)),part_b,initial_b,0.1,0.1,1e-10,0.00001,50);
+
+    //the following is just to produce a pleasing image showing the result.
+    //Transform the models
+    pcl::PointCloud<pcl::PointXYZ>::Ptr a_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*model_a.at(result_a.at(0)).cloud,*a_positioned);
+    pcl::transformPointCloud(*a_positioned,*a_positioned,final_a);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr b_positioned(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*model_b.at(result_b.at(0)).cloud,*b_positioned);
+    pcl::transformPointCloud(*b_positioned,*b_positioned,final_b);
+
+    //Display the cloud and models
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene_copy,b_transformed,a_transformed;
+    scene_copy = color_cloud(cloud,255,255,255);
+    b_transformed = color_cloud(b_positioned,255,0,0);
+    a_transformed = color_cloud(a_positioned,0,255,0);
+    *scene_copy += *b_transformed;
+    *scene_copy += *a_transformed;
+
+    return scene_copy;
+}
 }
 
 
