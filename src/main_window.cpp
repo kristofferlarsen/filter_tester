@@ -516,12 +516,30 @@ void MainWindow::on_test_button_clicked(bool check)
     RayTraceCloud left_part, right_part;
     if(left_clusters.size() != 1){
         //more than one cluster, find the correct one
+        std::vector<RayTraceCloud> left_cluster_models;
+        for(int i = 0; i<left_clusters.size(); i++){
+            RayTraceCloud tmp_model;
+            tmp_model.cloud = left_clusters.at(i);
+            left_cluster_models.push_back(filters->calculate_features(tmp_model));
+        }
+        std::cout << "her må det gjøres gitt" << std::endl;
+        int tmp = filters->search_for_model(left_cluster_models,freakthing->getModels());
+        left_part.cloud = left_clusters.at(tmp);
     }
     else{
         left_part.cloud = left_clusters.at(0);
     }
     if(right_clusters.size() != 1){
         //more than one cluster, find the correct one
+        std::vector<RayTraceCloud> right_cluster_models;
+        for(int i = 0; i<right_clusters.size(); i++){
+            RayTraceCloud tmp_model;
+            tmp_model.cloud = right_clusters.at(i);
+            right_cluster_models.push_back(filters->calculate_features(tmp_model));
+        }
+        std::cout << "her må det gjøres gitt" << std::endl;
+        int tmp = filters->search_for_model(right_cluster_models,cone->getModels());
+        right_part.cloud = right_clusters.at(tmp);
     }
     else{
         right_part.cloud = right_clusters.at(0);
@@ -563,6 +581,8 @@ void MainWindow::on_test_button_clicked(bool check)
     *scene_copy += *cone_transformed;
     *scene_copy += *freak_transformed;
     display_viewer_2(filters->visualize_rgb(scene_copy));
+
+    pcl::io::savePCDFileBinary("/home/minions/Desktop/object_detection.pcd",*scene_copy);
 
     //pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp(new pcl::PointCloud<pcl::PointXYZRGB>);
     //*temp += *filters->color_cloud(left_section,255,0,0);
