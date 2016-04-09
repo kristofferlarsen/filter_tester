@@ -30,12 +30,12 @@ MainWindow::MainWindow(int argc, char** argv, QWidget *parent)
     filter_changed_flag = true;
     init_ui_elemets();
 
-    freakthing = new ModelLoader("freakthing-42-200");
-    freakthing->populateLoader();
-    box = new ModelLoader("nuc-42-100");
-    box->populateLoader();
-    cone = new ModelLoader("cone-42-200");
-    cone->populateLoader();
+//    freakthing = new ModelLoader("freakthing-42-200");
+//    cone = new ModelLoader("cone-42-200");
+//    box = new ModelLoader("nuc-42-100");
+//    freakthing->populateLoader();
+//    box->populateLoader();
+//    cone->populateLoader();
 }
 
 MainWindow::~MainWindow() {}
@@ -485,17 +485,16 @@ void MainWindow::on_test_button_clicked(bool check)
 //    extract.filter (*cloud_plane);
 
 //    filteredCloud = cloud;
-    std::clock_t begin = std::clock();
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr detectionCloud = filters->object_detection(input_cloud,box->getModels(),box->getModels());
+    //pcl::PointCloud<pcl::PointXYZRGB>::Ptr detectionCloud = filters->object_detection(input_cloud,box->getModels(),box->getModels());
+    //display_viewer_2(filters->visualize_rgb(detectionCloud));
 
-    std::clock_t end1 = std::clock();
-    display_viewer_2(filters->visualize_rgb(detectionCloud));
-    std::clock_t end2 = std::clock();
-    double time1 = double(end1-begin) / CLOCKS_PER_SEC;
-    double time2 = double(end2-begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time detection: " << time1 << std::endl;
-    std::cout << "Elapsed time total: " << time2 << std::endl;
+
+
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters_section_a = filters->cluster_extraction(input_cloud,0.005);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr clusterExtracted = filters->combine_clouds(clusters_section_a);
+    display_viewer_2(filters->visualize(clusterExtracted));
+
 
 
 

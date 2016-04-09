@@ -229,33 +229,24 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> PclFilters::cluster_extraction(
     seg.setMethodType (pcl::SAC_RANSAC);
     seg.setMaxIterations (100);
     seg.setDistanceThreshold (distance);
-    int i=0, nr_points = (int) incloud->points.size ();
 
-    while (incloud->points.size () > 0.3 * nr_points)
-    {
-        // Segment the largest planar component from the remaining cloud
-        seg.setInputCloud (incloud);
-        seg.segment (*inliers, *coefficients);
-        if (inliers->indices.size () == 0)
-        {
-            std::cout << "Could not estimate a planar model for the given dataset." << std::endl;
-            break;
-        }
+    // Segment the largest planar component from the remaining cloud
+    seg.setInputCloud (incloud);
+    seg.segment (*inliers, *coefficients);
 
-        // Extract the planar inliers from the input cloud
-        pcl::ExtractIndices<pcl::PointXYZ> extract;
-        extract.setInputCloud (incloud);
-        extract.setIndices (inliers);
-        extract.setNegative (false);
+    // Extract the planar inliers from the input cloud
+    pcl::ExtractIndices<pcl::PointXYZ> extract;
+    extract.setInputCloud (incloud);
+    extract.setIndices (inliers);
+    extract.setNegative (false);
 
-        // Get the points associated with the planar surface
-        extract.filter (*cloud_plane);
+    // Get the points associated with the planar surface
+    extract.filter (*cloud_plane);
 
-        // Remove the planar inliers, extract the rest
-        extract.setNegative (true);
-        extract.filter (*cloud_f);
-        *incloud = *cloud_f;
-    }
+    // Remove the planar inliers, extract the rest
+    extract.setNegative (true);
+    extract.filter (*cloud_f);
+    *incloud = *cloud_f;
 
     // Creating the KdTree object for the search method of the extraction
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
