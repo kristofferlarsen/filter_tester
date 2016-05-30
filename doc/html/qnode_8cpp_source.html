@@ -29,91 +29,78 @@
 <div class="title">qnode.cpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="qnode_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">/*****************************************************************************</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">** Includes</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">*****************************************************************************/</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../include/qt_filter_tester/qnode.hpp&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<a href="qnode_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Original author Kristoffer Larsen. Latest change date 01.05.2016</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// qnode.cpp is responsible for all cross application communication within ROS.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// Created as part of the software solution for a Master&#39;s Thesis in Production Technology at NTNU Trondheim.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;../include/qt_filter_tester/qnode.hpp&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>qt_filter_tester {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">   12</a></span>&#160;<a class="code" href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">QNode::QNode</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv ) :</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        init_argc(argc),</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;        init_argv(argv)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;        {}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">/*****************************************************************************</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">** Namespaces</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">*****************************************************************************/</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>qt_filter_tester {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/*****************************************************************************</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">** Implementation</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">*****************************************************************************/</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">   27</a></span>&#160;<a class="code" href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">QNode::QNode</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv ) :</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        init_argc(argc),</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        init_argv(argv)</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        {}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">   32</a></span>&#160;<a class="code" href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">QNode::~QNode</a>() {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keywordflow">if</span>(ros::isStarted()) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      ros::shutdown(); <span class="comment">// explicitly needed since we use ros::start();</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      ros::waitForShutdown();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        wait();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">   40</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">QNode::init</a>() {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        ros::init(<a class="code" href="classqt__filter__tester_1_1QNode.html#a0e2d2716aef53536c124bb905ee8bc79">init_argc</a>,<a class="code" href="classqt__filter__tester_1_1QNode.html#a1fba7567dc0652c50469f4563c91de14">init_argv</a>,<span class="stringliteral">&quot;qt_filter_tester&quot;</span>);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">if</span> ( ! ros::master::check() ) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        ros::start(); <span class="comment">// explicitly needed since our nodehandle is going out of scope.</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        ros::NodeHandle n;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="comment">// Add your ros communications here.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        start();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#ad9cd0a4e3d0b0414cf3917e35bae6495">   52</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">QNode::init</a>(<span class="keyword">const</span> std::string &amp;master_url, <span class="keyword">const</span> std::string &amp;host_url) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        std::map&lt;std::string,std::string&gt; remappings;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        remappings[<span class="stringliteral">&quot;__master&quot;</span>] = master_url;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        remappings[<span class="stringliteral">&quot;__hostname&quot;</span>] = host_url;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        ros::init(remappings,<span class="stringliteral">&quot;qt_filter_tester&quot;</span>);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">if</span> ( ! ros::master::check() ) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        ros::start(); <span class="comment">// explicitly needed since our nodehandle is going out of scope.</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        ros::NodeHandle n;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Add your ros communications here.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        start();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">   70</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">QNode::run</a>() {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        ros::Rate loop_rate(1);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">while</span> ( ros::ok() ) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                ros::spinOnce();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                loop_rate.sleep();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        Q_EMIT <a class="code" href="classqt__filter__tester_1_1QNode.html#aa9f5871fd0a343afeb1d243989a7d8e4">rosShutdown</a>(); <span class="comment">// used to signal the gui for a shutdown (useful to roslaunch)</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_aa9f5871fd0a343afeb1d243989a7d8e4"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#aa9f5871fd0a343afeb1d243989a7d8e4">qt_filter_tester::QNode::rosShutdown</a></div><div class="ttdeci">void rosShutdown()</div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a90e4d0e94c2b531e29ee5c92a0901608"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">qt_filter_tester::QNode::run</a></div><div class="ttdeci">void run()</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00070">qnode.cpp:70</a></div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_ae07901a2356f4652a1af5d4fc96a1d76"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">qt_filter_tester::QNode::init</a></div><div class="ttdeci">bool init()</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00040">qnode.cpp:40</a></div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a975f4aa2231bdacafd727b6e59721971"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">qt_filter_tester::QNode::~QNode</a></div><div class="ttdeci">virtual ~QNode()</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00032">qnode.cpp:32</a></div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a0e2d2716aef53536c124bb905ee8bc79"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a0e2d2716aef53536c124bb905ee8bc79">qt_filter_tester::QNode::init_argc</a></div><div class="ttdeci">int init_argc</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8hpp_source.html#l00067">qnode.hpp:67</a></div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_abe0d34ac5bb5691b30a2d174dba6eb32"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">qt_filter_tester::QNode::QNode</a></div><div class="ttdeci">QNode(int argc, char **argv)</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00027">qnode.cpp:27</a></div></div>
-<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a1fba7567dc0652c50469f4563c91de14"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a1fba7567dc0652c50469f4563c91de14">qt_filter_tester::QNode::init_argv</a></div><div class="ttdeci">char ** init_argv</div><div class="ttdef"><b>Definition:</b> <a href="qnode_8hpp_source.html#l00068">qnode.hpp:68</a></div></div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">   17</a></span>&#160;<a class="code" href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">QNode::~QNode</a>() {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordflow">if</span>(ros::isStarted()) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      ros::shutdown();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      ros::waitForShutdown();</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    }</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        wait();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">   25</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">QNode::init</a>() {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        ros::init(<a class="code" href="classqt__filter__tester_1_1QNode.html#a0e2d2716aef53536c124bb905ee8bc79">init_argc</a>,<a class="code" href="classqt__filter__tester_1_1QNode.html#a1fba7567dc0652c50469f4563c91de14">init_argv</a>,<span class="stringliteral">&quot;qt_filter_tester&quot;</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;        <span class="keywordflow">if</span> ( ! ros::master::check() ) {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        }</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    ros::start();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        ros::NodeHandle n;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;        start();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#ad9cd0a4e3d0b0414cf3917e35bae6495">   36</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">QNode::init</a>(<span class="keyword">const</span> std::string &amp;master_url, <span class="keyword">const</span> std::string &amp;host_url) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        std::map&lt;std::string,std::string&gt; remappings;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        remappings[<span class="stringliteral">&quot;__master&quot;</span>] = master_url;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        remappings[<span class="stringliteral">&quot;__hostname&quot;</span>] = host_url;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        ros::init(remappings,<span class="stringliteral">&quot;qt_filter_tester&quot;</span>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">if</span> ( ! ros::master::check() ) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    ros::start();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        ros::NodeHandle n;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        start();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">   50</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">QNode::run</a>() {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        ros::Rate loop_rate(1);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">while</span> ( ros::ok() ) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                ros::spinOnce();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                loop_rate.sleep();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    Q_EMIT <a class="code" href="classqt__filter__tester_1_1QNode.html#aa9f5871fd0a343afeb1d243989a7d8e4">rosShutdown</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_aa9f5871fd0a343afeb1d243989a7d8e4"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#aa9f5871fd0a343afeb1d243989a7d8e4">qt_filter_tester::QNode::rosShutdown</a></div><div class="ttdeci">void rosShutdown()</div><div class="ttdoc">Signals the user interface to close upon a ros shutdown. </div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a90e4d0e94c2b531e29ee5c92a0901608"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a90e4d0e94c2b531e29ee5c92a0901608">qt_filter_tester::QNode::run</a></div><div class="ttdeci">void run()</div><div class="ttdoc">Starts the main thread. At this point, the thread is driven by ROS communication events. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00050">qnode.cpp:50</a></div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_ae07901a2356f4652a1af5d4fc96a1d76"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#ae07901a2356f4652a1af5d4fc96a1d76">qt_filter_tester::QNode::init</a></div><div class="ttdeci">bool init()</div><div class="ttdoc">Initiates the ROS communication. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00025">qnode.cpp:25</a></div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a975f4aa2231bdacafd727b6e59721971"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a975f4aa2231bdacafd727b6e59721971">qt_filter_tester::QNode::~QNode</a></div><div class="ttdeci">virtual ~QNode()</div><div class="ttdoc">Desconstructor for the QNode class. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00017">qnode.cpp:17</a></div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a0e2d2716aef53536c124bb905ee8bc79"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a0e2d2716aef53536c124bb905ee8bc79">qt_filter_tester::QNode::init_argc</a></div><div class="ttdeci">int init_argc</div><div class="ttdoc">Initial condition. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8hpp_source.html#l00066">qnode.hpp:66</a></div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_abe0d34ac5bb5691b30a2d174dba6eb32"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#abe0d34ac5bb5691b30a2d174dba6eb32">qt_filter_tester::QNode::QNode</a></div><div class="ttdeci">QNode(int argc, char **argv)</div><div class="ttdoc">Constructor for the QNode class. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8cpp_source.html#l00012">qnode.cpp:12</a></div></div>
+<div class="ttc" id="classqt__filter__tester_1_1QNode_html_a1fba7567dc0652c50469f4563c91de14"><div class="ttname"><a href="classqt__filter__tester_1_1QNode.html#a1fba7567dc0652c50469f4563c91de14">qt_filter_tester::QNode::init_argv</a></div><div class="ttdeci">char ** init_argv</div><div class="ttdoc">Initial condition. </div><div class="ttdef"><b>Definition:</b> <a href="qnode_8hpp_source.html#l00067">qnode.hpp:67</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 
 <br clear="all" />
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/qt_filter_tester">qt_filter_tester</a><br />
 Author(s): Kristoffer</br />
-<small>autogenerated on Thu Mar 31 2016 16:20:55</small>
+<small>autogenerated on Mon May 30 2016 12:50:23</small>
 </div>
 </body>
 </html>

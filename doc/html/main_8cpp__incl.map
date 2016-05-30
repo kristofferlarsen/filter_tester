@@ -1,6 +1,6 @@
 <map id="main.cpp" name="main.cpp">
-<area shape="rect" id="node4" href="$main__window_8hpp.html" title="Qt based gui for QT_test. " alt="" coords="3418,81,3588,122"/>
-<area shape="rect" id="node7" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="810,179,891,205"/>
-<area shape="rect" id="node20" href="$modelloader_8hpp.html" title="modelloader.hpp" alt="" coords="2164,179,2280,205"/>
-<area shape="rect" id="node34" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="2570,269,2672,296"/>
+<area shape="rect" id="node4" href="$main__window_8hpp.html" title="../include/qt_filter\l_tester/main_window.hpp" alt="" coords="3267,81,3437,122"/>
+<area shape="rect" id="node7" href="$qnode_8hpp.html" title="qnode.hpp" alt="" coords="812,179,893,205"/>
+<area shape="rect" id="node16" href="$modelloader_8hpp.html" title="modelloader.hpp" alt="" coords="1988,179,2104,205"/>
+<area shape="rect" id="node32" href="$pcl__filters_8hpp.html" title="pcl_filters.hpp" alt="" coords="3085,269,3187,296"/>
 </map>

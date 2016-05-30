@@ -1,28 +1,13 @@
-/**
- * @file /src/qnode.cpp
- *
- * @brief Ros communication central!
- *
- * @date February 2011
- **/
-
-/*****************************************************************************
-** Includes
-*****************************************************************************/
-
+//
+// Original author Kristoffer Larsen. Latest change date 01.05.2016
+// qnode.cpp is responsible for all cross application communication within ROS.
+//
+// Created as part of the software solution for a Master's Thesis in Production Technology at NTNU Trondheim.
+//
 
 #include "../include/qt_filter_tester/qnode.hpp"
 
-
-/*****************************************************************************
-** Namespaces
-*****************************************************************************/
-
 namespace qt_filter_tester {
-
-/*****************************************************************************
-** Implementation
-*****************************************************************************/
 
 QNode::QNode(int argc, char** argv ) :
 	init_argc(argc),
@@ -31,7 +16,7 @@ QNode::QNode(int argc, char** argv ) :
 
 QNode::~QNode() {
     if(ros::isStarted()) {
-      ros::shutdown(); // explicitly needed since we use ros::start();
+      ros::shutdown();
       ros::waitForShutdown();
     }
 	wait();
@@ -42,9 +27,8 @@ bool QNode::init() {
 	if ( ! ros::master::check() ) {
 		return false;
 	}
-	ros::start(); // explicitly needed since our nodehandle is going out of scope.
+    ros::start();
 	ros::NodeHandle n;
-	// Add your ros communications here.
 	start();
 	return true;
 }
@@ -54,15 +38,11 @@ bool QNode::init(const std::string &master_url, const std::string &host_url) {
 	remappings["__master"] = master_url;
 	remappings["__hostname"] = host_url;
 	ros::init(remappings,"qt_filter_tester");
-
-
-
 	if ( ! ros::master::check() ) {
 		return false;
 	}
-	ros::start(); // explicitly needed since our nodehandle is going out of scope.
+    ros::start();
 	ros::NodeHandle n;
-    // Add your ros communications here.
 	start();
 	return true;
 }
@@ -73,6 +53,6 @@ void QNode::run() {
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
-	Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
+    Q_EMIT rosShutdown();
 }
 }
